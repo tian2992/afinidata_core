@@ -1,0 +1,17 @@
+{% extends 'areas/base.html' %}
+
+{% block title %}
+    Afinidata | {{ area.name }}
+{% endblock %}
+
+{% block content %}
+    <h1>{{ area.name }}</h1>
+
+    <ul>
+        {% for milestone in area.milestone_set.all %}
+            <li>{{ milestone.name }}</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'areas:index' %}">Regresar</a>
+{% endblock %}

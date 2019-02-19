@@ -6,4 +6,12 @@
 
 {% block content %}
     <h1>Areas</h1>
+
+    <ul>
+        {% for area in areas %}
+            <li><a href="{% url 'areas:area' id=area.pk %}">{{ area.name }}</a></li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'areas:new' %}">Create new Area</a>
 {% endblock %}

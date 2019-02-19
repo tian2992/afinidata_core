@@ -2,10 +2,15 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.views.generic import TemplateView
 from milestones.forms import MilestoneFormModel
-
+from milestones.models import Milestone
 
 class HomeView(TemplateView):
     template_name = 'milestones/index.html'
+
+    def get_context_data(self, **kwargs):
+        milestones = Milestone.objects.all()
+
+        return dict(milestones=milestones)
 
 
 class NewMilestoneView(View):

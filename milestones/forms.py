@@ -6,4 +6,4 @@ class MilestoneFormModel(forms.ModelForm):
 
     class Meta:
         model = Milestone
-        fields = ('area', 'name', 'value')
+        fields = ('area', 'name', 'value', 'secondary_value')
