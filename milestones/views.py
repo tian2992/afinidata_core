@@ -1,8 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.views.generic import TemplateView
 from milestones.forms import MilestoneFormModel
 from milestones.models import Milestone
+
 
 class HomeView(TemplateView):
     template_name = 'milestones/index.html'
@@ -11,6 +12,15 @@ class HomeView(TemplateView):
         milestones = Milestone.objects.all()
 
         return dict(milestones=milestones)
+
+
+class MilestoneView(TemplateView):
+    template_name = 'milestones/milestone.html'
+
+    def get_context_data(self, **kwargs):
+        milestone = get_object_or_404(Milestone, pk=kwargs['id'])
+
+        return dict(milestone=milestone)
 
 
 class NewMilestoneView(View):
