@@ -3,6 +3,7 @@ from django.views import View
 from django.views.generic import TemplateView
 from milestones.forms import MilestoneFormModel
 from milestones.models import Milestone
+from django.http import JsonResponse
 
 
 class HomeView(TemplateView):
@@ -21,6 +22,24 @@ class MilestoneView(TemplateView):
         milestone = get_object_or_404(Milestone, pk=kwargs['id'])
 
         return dict(milestone=milestone)
+
+
+class EditMilestoneView(View):
+    template_name = 'milestones/edit.html'
+
+    def post(self, request, *args, **kwargs):
+        milestone = get_object_or_404(Milestone, pk=kwargs['id'])
+        form = MilestoneFormModel(request.POST or None)
+        data = {**request.POST}
+        del data['csrfmiddlewaretoken']
+        milestone.save()
+        return JsonResponse(dict(hello=data))
+
+    def get(self, request, *args, **kwargs):
+        milestone = get_object_or_404(Milestone, pk=kwargs['id'])
+        form = MilestoneFormModel(instance=milestone)
+
+        return render(request, self.template_name, {'form': form})
 
 
 class NewMilestoneView(View):
