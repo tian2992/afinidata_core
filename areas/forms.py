@@ -6,4 +6,4 @@ class AreaFormModel(forms.ModelForm):
 
     class Meta:
         model = Area
-        fields = ['name']
+        fields = ['name', 'description']

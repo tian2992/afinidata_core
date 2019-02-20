@@ -9,7 +9,11 @@
 
     <ul>
         {% for area in areas %}
-            <li><a href="{% url 'areas:area' id=area.pk %}">{{ area.name }}</a></li>
+            <li>
+                {{ area.name }} -
+                <a href="{% url 'areas:area' id=area.pk %}">View</a> -
+                <a href="{% url 'areas:edit' id=area.pk %}">Edit</a>
+            </li>
         {% endfor %}
     </ul>
 

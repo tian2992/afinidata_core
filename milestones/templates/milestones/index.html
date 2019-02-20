@@ -9,7 +9,11 @@
 
     <ul>
         {% for milestone in milestones %}
-            <li>{{ milestone.name }} - {{ milestone.area.name }} - <a href="{% url 'milestones:milestone' id=milestone.pk %}">Ver</a></li>
+            <li>
+                {{ milestone.code }} {{ milestone.name }} - {{ milestone.area.name }} -
+                <a href="{% url 'milestones:milestone' id=milestone.pk %}">View</a> -
+                <a href="{% url 'milestones:edit' id=milestone.pk %}">Edit</a>
+            </li>
         {% endfor %}
 
     </ul>

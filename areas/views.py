@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from django.views import View
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, UpdateView
 from areas.forms import AreaFormModel
 from areas.models import Area
 
@@ -14,6 +14,20 @@ class HomeView(TemplateView):
         areas = Area.objects.all()
 
         return dict(areas=areas)
+
+
+class EditAreaView(UpdateView):
+    model = Area
+    fields = ('name', 'description')
+    template_name = 'areas/edit.html'
+    pk_url_kwarg = 'id'
+    context_object_name = 'area'
+
+    def form_valid(self, form):
+        area = form.save(commit=False)
+        area.save()
+
+        return redirect('areas:area', id=area.pk)
 
 
 class AreaView(TemplateView):

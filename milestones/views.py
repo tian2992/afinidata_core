@@ -26,7 +26,7 @@ class MilestoneView(TemplateView):
 
 class EditMilestoneView(UpdateView):
     model = Milestone
-    fields = ('name', 'area', 'value', 'secondary_value')
+    fields = ('name', 'code', 'area', 'value', 'secondary_value', 'description')
     template_name = 'milestones/edit.html'
     pk_url_kwarg = 'id'
     context_object_name = 'milestone'
