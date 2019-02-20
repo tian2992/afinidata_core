@@ -5,5 +5,30 @@
 {% endblock %}
 
 {% block content %}
-    <h1>{{ milestone.name }}</h1>
+    <h1>{{ milestone.name }} <small>{{ milestone.code }}</small></h1>
+
+    <div class="content">
+        {{ milestone.description }}
+    </div>
+
+    <div class="properties">
+        <strong>Area: </strong>
+        <a href="{% url 'areas:area' id=milestone.area.pk %}">{{ milestone.area.name }}</a>
+        <br>
+        <strong>Value: </strong>
+        <span>{{ milestone.value }}</span>
+        <br>
+        <strong>Secondary Value: </strong>
+        <span>{{ milestone.secondary_value }}</span>
+        <br>
+        <strong>Created At: </strong>
+        <span>{{ milestone.created_at }}</span>
+        <br>
+        <strong>Last updated At: </strong>
+        <span>{{ milestone.updated_at }}</span>
+    </div>
+
+    <div class="links">
+        <a href="{% url 'milestones:edit' id=milestone.pk%}">Edit</a>
+    </div>
 {% endblock %}

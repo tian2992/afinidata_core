@@ -20,5 +20,8 @@
         {% endfor %}
     </ul>
 
-    <a href="{% url 'areas:index' %}">Regresar</a>
+    <div class="links">
+        <a href="{% url 'areas:edit' id=area.pk %}">Edit</a> - 
+        <a href="{% url 'areas:index' %}">Back</a>
+    </div>
 {% endblock %}
