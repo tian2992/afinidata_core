@@ -1,0 +1,16 @@
+{% extends 'entities/base.html' %}
+
+{% block title %}Afinidata | Entities{% endblock %}
+
+{% block content %}
+    <h1>Entities</h1>
+
+    <ul>
+        {% for entity in entities %}
+            <li>
+                {{ entity.name }} -
+                <a href="{% url 'entities:edit' id=entity.pk %}">Edit</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

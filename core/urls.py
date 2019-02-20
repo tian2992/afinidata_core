@@ -20,5 +20,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('pages.urls', namespace='pages')),
     path('areas/', include('areas.urls', namespace='areas')),
-    path('milestones/', include('milestones.urls', namespace='milestones'))
+    path('milestones/', include('milestones.urls', namespace='milestones')),
+    path('entities/', include('entities.urls', namespace='entities'))
 ]

@@ -1,0 +1,20 @@
+{% extends 'entities/base.html' %}
+
+{% block title %}Afinidata | New Entity{% endblock %}
+
+{% block content %}
+    <h1>New entity</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <div class="form-submit">
+            <input type="submit" value="Create Entity">
+        </div>
+    </form>
+
+    <div class="links">
+        <a href="{% url 'entities:index' %}">Back to Entities</a>
+    </div>
+{% endblock %}
