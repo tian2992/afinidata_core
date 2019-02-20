@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, UpdateView
 from milestones.forms import MilestoneFormModel
 from milestones.models import Milestone
 from django.http import JsonResponse
@@ -24,22 +24,17 @@ class MilestoneView(TemplateView):
         return dict(milestone=milestone)
 
 
-class EditMilestoneView(View):
+class EditMilestoneView(UpdateView):
+    model = Milestone
+    fields = ('name', 'area', 'value', 'secondary_value')
     template_name = 'milestones/edit.html'
+    pk_url_kwarg = 'id'
+    context_object_name = 'milestone'
 
-    def post(self, request, *args, **kwargs):
-        milestone = get_object_or_404(Milestone, pk=kwargs['id'])
-        form = MilestoneFormModel(request.POST or None)
-        data = {**request.POST}
-        del data['csrfmiddlewaretoken']
+    def form_valid(self, form):
+        milestone = form.save(commit=False)
         milestone.save()
-        return JsonResponse(dict(hello=data))
-
-    def get(self, request, *args, **kwargs):
-        milestone = get_object_or_404(Milestone, pk=kwargs['id'])
-        form = MilestoneFormModel(instance=milestone)
-
-        return render(request, self.template_name, {'form': form})
+        return redirect('milestones:milestone', id=milestone.pk)
 
 
 class NewMilestoneView(View):
