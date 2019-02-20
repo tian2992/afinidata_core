@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'areas.apps.AreasConfig',
-    'milestones.apps.MilestonesConfig'
+    'milestones.apps.MilestonesConfig',
+    'pages.apps.PagesConfig'
 ]
 
 MIDDLEWARE = [
