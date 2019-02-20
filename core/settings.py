@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'areas.apps.AreasConfig',
     'milestones.apps.MilestonesConfig',
-    'pages.apps.PagesConfig'
+    'pages.apps.PagesConfig',
+    'entities.apps.EntitiesConfig'
 ]
 
 MIDDLEWARE = [
