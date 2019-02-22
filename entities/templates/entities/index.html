@@ -9,7 +9,9 @@
         {% for entity in entities %}
             <li>
                 {{ entity.name }} -
-                <a href="{% url 'entities:edit' id=entity.pk %}">Edit</a>
+                <a href="{% url 'entities:entity' id=entity.pk %}">View</a> -
+                <a href="{% url 'entities:edit' id=entity.pk %}">Edit</a> -
+                <a href="{% url 'entities:delete' id=entity.pk %}">Delete</a>
             </li>
         {% endfor %}
     </ul>
