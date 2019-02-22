@@ -1,0 +1,16 @@
+{% extends 'bots/base.html' %}
+
+{% block title %}Afinidata | {{ instance.name }}{% endblock %}
+
+{% block content %}
+    <h1>{{ instance.name }}</h1>
+
+    <div class="content">
+        <ul>
+            <li><strong>Bot: </strong><span>{{ instance.bot.name }}</span></li>
+            <li><strong>Entity: </strong><span>{{ instance.entity.name }}</span></li>
+            <li><strong>Created at: </strong><span>{{ instance.created_at }}</span></li>
+            <li><strong>Updated at: </strong><span>{{ instance.updated_at }}</span></li>
+        </ul>
+    </div>
+{% endblock %}

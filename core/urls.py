@@ -22,5 +22,6 @@ urlpatterns = [
     path('areas/', include('areas.urls', namespace='areas')),
     path('milestones/', include('milestones.urls', namespace='milestones')),
     path('entities/', include('entities.urls', namespace='entities')),
-    path('bots/', include('bots.urls', namespace='bots'))
+    path('bots/', include('bots.urls', namespace='bots')),
+    path('instances/', include('instances.urls', namespace='instances'))
 ]
