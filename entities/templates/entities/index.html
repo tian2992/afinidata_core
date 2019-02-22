@@ -1,6 +1,6 @@
-{% extends 'entities/base.html' %}
+{% extends 'bots/base.html' %}
 
-{% block title %}Afinidata | Entities{% endblock %}
+{% block title %}Afinidata | Bots{% endblock %}
 
 {% block content %}
     <h1>Entities</h1>
@@ -15,4 +15,6 @@
             </li>
         {% endfor %}
     </ul>
+
+    <a href="{% url 'entities:new' %}">Create Entity</a>
 {% endblock %}

@@ -40,7 +40,9 @@ INSTALLED_APPS = [
     'areas.apps.AreasConfig',
     'milestones.apps.MilestonesConfig',
     'pages.apps.PagesConfig',
-    'entities.apps.EntitiesConfig'
+    'entities.apps.EntitiesConfig',
+    'bots.apps.BotsConfig',
+    'instances.apps.InstancesConfig'
 ]
 
 MIDDLEWARE = [
