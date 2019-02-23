@@ -30,3 +30,17 @@ class Score(models.Model):
 
     class Meta:
         app_label = 'instances'
+
+
+class ScoreTracking(models.Model):
+    instance = models.ForeignKey(Instance, on_delete=models.CASCADE)
+    area = models.ForeignKey(Area, on_delete=models.CASCADE)
+    value = models.FloatField(default=0, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.instance.name + '__' + self.area.name + '__' + str(round(self.value, 2))
+
+    class Meta:
+        app_label = 'instances'

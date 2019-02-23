@@ -2,6 +2,11 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from instances.models import Instance
 from django.views.generic import TemplateView, CreateView, UpdateView, DeleteView
+from django.views import View
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from instances.forms import ScoreModelForm, ScoreTrackingModelForm
+from instances.models import Score, ScoreTracking
 
 
 class HomeView(TemplateView):
@@ -48,3 +53,26 @@ class DeleteInstanceView(DeleteView):
     template_name = 'instances/delete.html'
     pk_url_kwarg = 'id'
     success_url = reverse_lazy('instances:index')
+
+
+@csrf_exempt
+def score(request, id):
+
+    if request.method == 'POST':
+        form = ScoreModelForm(request.POST)
+        tracking_form = ScoreTrackingModelForm(request.POST)
+
+        if form.is_valid():
+            instance_score, response = Score.objects.get_or_create(
+                area_id=request.POST['area'],
+                instance_id=request.POST['instance']
+            )
+            instance_score.value = request.POST['value']
+            instance_score.save()
+
+        if tracking_form.is_valid():
+            tracking_form.save()
+
+            return JsonResponse(dict(status='done', data=dict(message='score has been created or updated')))
+        else:
+            return JsonResponse(dict(status='error', error='invalid params'))

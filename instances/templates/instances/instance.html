@@ -12,5 +12,11 @@
             <li><strong>Created at: </strong><span>{{ instance.created_at }}</span></li>
             <li><strong>Updated at: </strong><span>{{ instance.updated_at }}</span></li>
         </ul>
+
+        <ul>
+            {% for score in instance.score_set.all %}
+                <li><strong>{{ score.area.name }}</strong> - {{ score.value }}</li>
+            {% endfor %}
+        </ul>
     </div>
 {% endblock %}
