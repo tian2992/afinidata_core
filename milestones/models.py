@@ -14,3 +14,21 @@ class Milestone(models.Model):
 
     class Meta:
         app_label = 'milestones'
+
+    def __str__(self):
+        return self.name
+
+
+class Step(models.Model):
+    step = models.IntegerField()
+    value = models.FloatField(default=0.0)
+    secondary_value = models.FloatField(default=0.0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = 'milestones'
+
+    def __str__(self):
+        return str(self.step)
+
