@@ -1,11 +1,13 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
 from django.views.decorators.csrf import csrf_exempt
+from django.core import serializers
 from django.http import JsonResponse
 from django.views import View
 from django.views.generic import TemplateView, UpdateView
 from areas.forms import AreaFormModel, MilestonesByAreaForm
 from areas.models import Area
 from milestones.models import Milestone, Step
+import random
 
 
 class HomeView(TemplateView):
@@ -69,11 +71,22 @@ def milestones_by_area(request, id):
 
     if form.is_valid():
         step = get_object_or_404(Step, step=request.GET['step'])
-        step_value = step.value + int(request.GET['value']) \
+        step_value = step.value + float(request.GET['value']) \
             if request.GET['type'] == 'increment' \
-            else int(request.GET['value']) - step.value
-        milestones = Milestone.objects.filter(secondary_value__gt=step_value)[1]
-        print(milestones)
+            else float(request.GET['value']) - step.value
+        step_limit = step_value + 1
+        milestones = get_list_or_404(Milestone, value__gte=step_value, area=area, value__lte=step_limit)
+        limit = random.randrange(len(milestones))
+        milestone = milestones[limit]
+        return JsonResponse(dict(
+            data=dict(
+                milestone=dict(
+                    id=milestone.pk,
+                    name=milestone.name
+                )
+            ),
+            status='founded'
+        ))
     else:
         print('invalid')
     return JsonResponse(dict(hello='world'))

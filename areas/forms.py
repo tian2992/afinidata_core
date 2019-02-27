@@ -14,6 +14,6 @@ class MilestonesByAreaForm(forms.Form):
         ('increment', 'INCREMENT'),
         ('decrement', 'DECREMENT')
     )
-    value = forms.IntegerField()
+    value = forms.FloatField()
     type = forms.ChoiceField(choices=TYPE_CHOICES)
-    step = forms.IntegerField()
+    step = forms.FloatField()
