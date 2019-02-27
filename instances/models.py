@@ -9,6 +9,7 @@ class Instance(models.Model):
     entity = models.ForeignKey(Entity, on_delete=models.CASCADE)
     bot = models.ForeignKey(Bot, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
+    bot_user_id = models.IntegerField(default=1, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

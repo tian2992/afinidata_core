@@ -76,3 +76,23 @@ def score(request, id):
             return JsonResponse(dict(status='done', data=dict(message='score has been created or updated')))
         else:
             return JsonResponse(dict(status='error', error='invalid params'))
+    else:
+        return JsonResponse(dict(status='error', error='invalid method'))
+
+
+@csrf_exempt
+def instances_by_user(request, id):
+
+    if request.method == 'POST':
+        return JsonResponse(dict(status='error', error='invalid method'))
+
+    instances = Instance.objects.filter(bot_user_id=id)
+
+    if instances.count() <= 0:
+        return JsonResponse(dict(status='founded', data=[]))
+    else:
+        instances_to_return = []
+        for instance in instances:
+            instances_to_return.append(dict(id=instance.pk, name=instance.name))
+
+        return JsonResponse(dict(status='founded', data=dict(instances=instances_to_return)))
