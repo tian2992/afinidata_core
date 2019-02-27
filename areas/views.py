@@ -89,4 +89,4 @@ def milestones_by_area(request, id):
         ))
     else:
         print('invalid')
-    return JsonResponse(dict(hello='world'))
+    return JsonResponse(dict(status='error', error='invalid params'))

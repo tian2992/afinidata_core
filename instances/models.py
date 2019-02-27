@@ -2,6 +2,7 @@ from django.db import models
 from entities.models import Entity
 from bots.models import Bot
 from areas.models import Area
+from milestones.models import Milestone
 
 
 class Instance(models.Model):
@@ -44,3 +45,17 @@ class ScoreTracking(models.Model):
 
     class Meta:
         app_label = 'instances'
+
+
+class Response(models.Model):
+    instance = models.ForeignKey(Instance, on_delete=models.CASCADE)
+    milestone = models.ForeignKey(Milestone, on_delete=models.CASCADE)
+    response = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = 'instances'
+
+    def __str__(self):
+        return str(self.pk) + '__' + self.instance.name + '__response'

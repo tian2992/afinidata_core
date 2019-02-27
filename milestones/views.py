@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import View
 from django.views.generic import TemplateView, UpdateView
-from milestones.forms import MilestoneFormModel
-from milestones.models import Milestone
+from milestones.forms import MilestoneFormModel, ResponseMilestoneForm
+from milestones.models import Milestone, Step
+from instances.models import Instance, Response, Score
+from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 
 
@@ -53,3 +55,47 @@ class NewMilestoneView(View):
         form = MilestoneFormModel(request.POST or None)
 
         return render(request, self.template_name, {'form': form})
+
+
+@csrf_exempt
+def response_instance_to_milestone(request, id):
+
+    if request.method == 'GET':
+        return JsonResponse(dict(status='error', error='invalid params'))
+
+    milestone = get_object_or_404(Milestone, pk=id)
+
+    form = ResponseMilestoneForm(request.POST)
+
+    if form.is_valid():
+        try:
+            step = Step.objects.get(step=request.POST['step'])
+        except Exception as e:
+            print(e)
+            return JsonResponse(dict(status='error', error=str(e)))
+
+        instance = Instance.objects.get(pk=request.POST['instance'])
+        response = request.POST['response']
+        score = Score.objects.get(area=milestone.area, instance=instance)
+        value_to_response = score.value
+
+        if response == 'true':
+            value_to_response = value_to_response + step.value
+        else:
+            value_to_response = value_to_response - step.value
+
+        new_response = Response.objects.create(milestone=milestone, instance=instance, response=response)
+        return JsonResponse(dict(
+            status='finished',
+            data=dict(
+                step=int(request.POST['step']) + 1,
+                area=milestone.area.pk,
+                instance=instance.pk,
+                value=value_to_response
+            )
+        ))
+
+    else:
+        return JsonResponse(dict(status='error', error='invalid params'))
+
+
