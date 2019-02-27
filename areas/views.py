@@ -82,7 +82,8 @@ def milestones_by_area(request, id):
             data=dict(
                 milestone=dict(
                     id=milestone.pk,
-                    name=milestone.name
+                    name=milestone.name,
+                    area=milestone.area.pk
                 )
             ),
             status='founded'
