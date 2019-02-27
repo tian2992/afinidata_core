@@ -29,7 +29,7 @@ class InstanceView(TemplateView):
 class NewInstanceView(CreateView):
     model = Instance
     template_name = 'instances/new.html'
-    fields = ('entity', 'bot', 'name')
+    fields = ('entity', 'bot', 'name', 'bot_user_id')
 
     def form_valid(self, form):
         form.save()
@@ -38,7 +38,7 @@ class NewInstanceView(CreateView):
 
 class EditInstanceView(UpdateView):
     model = Instance
-    fields = ('entity', 'bot', 'name')
+    fields = ('entity', 'bot', 'name', 'bot_user_id')
     template_name = 'instances/edit.html'
     pk_url_kwarg = 'id'
     context_object_name = 'instance'
@@ -89,7 +89,9 @@ def instances_by_user(request, id):
     instances = Instance.objects.filter(bot_user_id=id)
 
     if instances.count() <= 0:
-        return JsonResponse(dict(status='founded', data=[]))
+        return JsonResponse(dict(status='founded', data=dict(
+            instances=[]
+        )))
     else:
         instances_to_return = []
         for instance in instances:

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -42,7 +43,8 @@ INSTALLED_APPS = [
     'pages.apps.PagesConfig',
     'entities.apps.EntitiesConfig',
     'bots.apps.BotsConfig',
-    'instances.apps.InstancesConfig'
+    'instances.apps.InstancesConfig',
+    'chatfuel.apps.ChatfuelConfig'
 ]
 
 MIDDLEWARE = [
@@ -125,6 +127,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+DOMAIN_URL = os.getenv('DOMAIN_URL')
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
