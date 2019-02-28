@@ -56,7 +56,7 @@ class DeleteInstanceView(DeleteView):
 
 
 @csrf_exempt
-def score(request, id):
+def score(request):
 
     if request.method == 'POST':
         form = ScoreModelForm(request.POST)

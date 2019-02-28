@@ -4,6 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from areas.forms import MilestonesByAreaForm
 from milestones.forms import ResponseMilestoneForm
+from instances.forms import ScoreModelForm
 import requests
 
 
@@ -13,8 +14,8 @@ def get_user_instances(request, id):
     if request.method == 'POST':
         return JsonResponse(dict(status='error', error='Invalid method'))
 
-    request_domain = settings.DOMAIN_URL + '/instances/by_bot_user/' + str(id)
-    r = requests.get(request_domain)
+    request_uri = settings.DOMAIN_URL + '/instances/by_bot_user/' + str(id)
+    r = requests.get(request_uri)
     response = r.json()
     if response['status'] != 'error':
         attributes = dict()
@@ -39,11 +40,11 @@ def milestone_by_area(request, id):
     if request.method == 'POST':
         return JsonResponse(dict(status='error', error='Invalid method'))
 
-    request_domain = settings.DOMAIN_URL + '/areas/' + str(id) + '/milestones/'
+    request_uri = settings.DOMAIN_URL + '/areas/' + str(id) + '/milestones/'
     form = MilestonesByAreaForm(request.GET)
     if form.is_valid():
         print(request.GET)
-        r = requests.get(request_domain, params=request.GET)
+        r = requests.get(request_uri, params=request.GET)
         response = r.json()
         print(response)
         if(response['status']) == 'error':
@@ -71,8 +72,8 @@ def response_milestone_for_instance(request, milestone_id):
     form = ResponseMilestoneForm(request.POST)
 
     if form.is_valid():
-        request_domain = settings.DOMAIN_URL + '/milestones/' + str(milestone_id) + '/response/'
-        r = requests.post(request_domain, request.POST)
+        request_uri = settings.DOMAIN_URL + '/milestones/' + str(milestone_id) + '/response/'
+        r = requests.post(request_uri, request.POST)
         response = r.json()
 
         if response['status'] == 'error':
@@ -87,3 +88,26 @@ def response_milestone_for_instance(request, milestone_id):
         return JsonResponse(dict(set_attributes=set_attributes, messages=[]))
     else:
         return JsonResponse(dict(status='error', error='Invalid params'))
+
+
+@csrf_exempt
+def set_area_value_to_instance(request):
+
+    if request.method == 'GET':
+        return JsonResponse(dict(status='error', error='Invalid method'))
+
+    form = ScoreModelForm(request.POST)
+
+    if not form.is_valid():
+        return JsonResponse(dict(status='error', error='Invalid params'))
+
+    request_uri = settings.DOMAIN_URL + '/instances/score/'
+    r = requests.post(request_uri, request.POST)
+    response = r.json()
+
+    if response['status'] == 'error':
+        return JsonResponse(dict(status='error', error=response['error']))
+
+    print(response)
+
+    return JsonResponse(dict(hello='world'))
