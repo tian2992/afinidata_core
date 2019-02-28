@@ -3,6 +3,7 @@ from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from areas.forms import MilestonesByAreaForm
+from milestones.forms import ResponseMilestoneForm
 import requests
 
 
@@ -58,6 +59,31 @@ def milestone_by_area(request, id):
         ))
         
     else:
-        print('invalid')
-    print(request_domain)
-    return JsonResponse(dict(hello='world'))
+        return JsonResponse(dict(status='error', error='Invalid params'))
+
+
+@csrf_exempt
+def response_milestone_for_instance(request, milestone_id):
+
+    if request.method == 'GET':
+        return JsonResponse(dict(status='error', error='Invalid method'))
+
+    form = ResponseMilestoneForm(request.POST)
+
+    if form.is_valid():
+        request_domain = settings.DOMAIN_URL + '/milestones/' + str(milestone_id) + '/response/'
+        r = requests.post(request_domain, request.POST)
+        response = r.json()
+
+        if response['status'] == 'error':
+            return JsonResponse(dict(status='error', error=response['error']))
+
+        set_attributes = dict(
+            step=response['data']['step'],
+            area=response['data']['area'],
+            value=response['data']['value'],
+            instance=response['data']['instance']
+        )
+        return JsonResponse(dict(set_attributes=set_attributes, messages=[]))
+    else:
+        return JsonResponse(dict(status='error', error='Invalid params'))
