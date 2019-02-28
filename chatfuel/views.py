@@ -44,7 +44,18 @@ def milestone_by_area(request, id):
         print(request.GET)
         r = requests.get(request_domain, params=request.GET)
         response = r.json()
+        print(response)
+        if(response['status']) == 'error':
+            return JsonResponse(dict(status='error', error=response['error']))
 
+        return JsonResponse(dict(
+            set_attributes=dict(
+                milestone_id=response['data']['milestone']['id'],
+                milestone_name=response['data']['milestone']['name'],
+                area=response['data']['milestone']['area']
+            ),
+            messages=[]
+        ))
         
     else:
         print('invalid')
