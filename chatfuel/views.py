@@ -105,9 +105,4 @@ def set_area_value_to_instance(request):
     r = requests.post(request_uri, request.POST)
     response = r.json()
 
-    if response['status'] == 'error':
-        return JsonResponse(dict(status='error', error=response['error']))
-
-    print(response)
-
-    return JsonResponse(dict(hello='world'))
+    return JsonResponse(response)

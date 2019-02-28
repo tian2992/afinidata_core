@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-from instances.models import Score, ScoreTracking
+from instances.models import Score, ScoreTracking, Instance
 
 
 class ScoreModelForm(ModelForm):
@@ -14,3 +14,10 @@ class ScoreTrackingModelForm(ModelForm):
     class Meta:
         model = ScoreTracking
         fields = ('value', 'area', 'instance')
+
+
+class InstanceModelForm(ModelForm):
+
+    class Meta:
+        model = Instance
+        fields = ('entity', 'bot', 'name', 'bot_user_id')

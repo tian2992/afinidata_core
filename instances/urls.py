@@ -1,5 +1,6 @@
 from django.urls import path
 from instances import views
+from instances import service_views
 
 app_name = 'instances'
 
@@ -10,5 +11,6 @@ path('', views.HomeView.as_view(), name='index'),
     path('<int:id>/edit/', views.EditInstanceView.as_view(), name='edit'),
     path('<int:id>/delete/', views.DeleteInstanceView.as_view(), name='delete'),
     path('score/', views.score, name='score'),
-    path('by_bot_user/<int:id>/', views.instances_by_user, name='by_bot_user')
+    path('by_bot_user/<int:id>/', views.instances_by_user, name='by_bot_user'),
+    path('api/new/', service_views.create_user, name="api_user")
 ]
