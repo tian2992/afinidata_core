@@ -85,13 +85,15 @@ def response_instance_to_milestone(request, id):
             value_to_response = value_to_response - step.value
 
         new_response = Response.objects.create(milestone=milestone, instance=instance, response=response)
+        response_type = 'increment' if response == 'true' else 'decrement'
         return JsonResponse(dict(
             status='finished',
             data=dict(
                 step=int(request.POST['step']) + 1,
                 area=milestone.area.pk,
                 instance=instance.pk,
-                value=value_to_response
+                value=value_to_response,
+                type=response_type
             )
         ))
 

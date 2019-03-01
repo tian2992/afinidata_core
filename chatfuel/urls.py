@@ -8,5 +8,6 @@ urlpatterns = [
     path('get_milestone_by_area/<int:id>/', views.milestone_by_area, name='milestone_by_area'),
     path('response_milestone_for_instance/<int:milestone_id>/', views.response_milestone_for_instance,\
          name='response_milestone_by_area'),
-    path('set_area_value_to_instance/', views.set_area_value_to_instance, name='area_to_instance')
+    path('set_area_value_to_instance/', views.set_area_value_to_instance, name='area_to_instance'),
+    path('instance/new/', views.create_instance, name='new_instance')
 ]

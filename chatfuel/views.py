@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from areas.forms import MilestonesByAreaForm
 from milestones.forms import ResponseMilestoneForm
-from instances.forms import ScoreModelForm
+from instances.forms import ScoreModelForm, InstanceModelForm
 import requests
 
 
@@ -32,6 +32,28 @@ def get_user_instances(request, id):
         ))
     else:
         return JsonResponse(dict(status='error', error=str(response['error'])))
+
+
+@csrf_exempt
+def create_instance(request):
+
+    if request.method == 'GET':
+        return JsonResponse(dict(status='error', error="Invalid method."))
+
+    form = InstanceModelForm(request.POST)
+
+    if not form.is_valid():
+        return JsonResponse(dict(status="error", error="Invalid params."))
+
+    new_instance = form.save()
+
+    return JsonResponse(dict(
+        set_attributes=dict(
+            instance=new_instance.pk,
+            instance_name=new_instance.name
+        ),
+        messages=[]
+    ))
 
 
 @csrf_exempt
