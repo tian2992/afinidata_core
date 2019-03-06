@@ -2,6 +2,7 @@ certifi==2018.11.29
 chardet==3.0.4
 Django==2.1.7
 idna==2.8
+mysqlclient==1.4.2.post1
 python-dotenv==0.10.1
 pytz==2018.9
 requests==2.21.0

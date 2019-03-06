@@ -84,15 +84,17 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.getenv('DATABASE_ENGINE'),
-        'NAME': os.getenv('DATABASE_NAME'),
-        'USER': os.getenv('DATABASE_USER'),
-        'PASSWORD': os.getenv('DATABASE_PASSWORD'),
-        'HOST': os.getenv('DATABASE_HOST'),
-        'PORT': os.getenv('DATABASE_PORT'),
+        'ENGINE': os.getenv('CORE_DATABASE_ENGINE'),
+        'NAME': os.getenv('CORE_DATABASE_NAME'),
+        'USER': os.getenv('CORE_DATABASE_USER'),
+        'PASSWORD': os.getenv('CORE_DATABASE_PASSWORD'),
+        'HOST': os.getenv('CORE_DATABASE_HOST'),
+        'PORT': os.getenv('CORE_DATABASE_PORT'),
     }
 }
 
+print('database name')
+print(os.getenv('CORE_DATABASE_NAME'))
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
 
@@ -130,10 +132,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
-DOMAIN_URL = os.getenv('DOMAIN_URL')
+DOMAIN_URL = os.getenv('CORE_DOMAIN_URL')
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication'
     ]
 }
+
+print('domain url')
+print(DOMAIN_URL)
