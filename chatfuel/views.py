@@ -14,21 +14,43 @@ def get_user_instances(request, id):
     if request.method == 'POST':
         return JsonResponse(dict(status='error', error='Invalid method'))
 
+    response_label = 'Choice Instance: '
+
+    try:
+        response_label = request.GET['label']
+        print(response_label)
+    except Exception as e:
+        pass
+
     request_uri = settings.DOMAIN_URL + '/instances/by_bot_user/' + str(id)
     r = requests.get(request_uri)
     response = r.json()
     if response['status'] != 'error':
         attributes = dict()
         instances = response['data']['instances']
+        replies = []
 
         if len(instances) > 0:
             for index, instance in enumerate(instances):
                 attributes['instance__' + str(index + 1)] = instance['id']
                 attributes['instance__' + str(index + 1) + '__name'] = instance['name']
 
+                replies.append(dict(
+                    title=instance['name'],
+                    set_attributes=dict(
+                        instance=instance['id'],
+                        instance_name=instance['name']
+                    )
+                ))
+
         return JsonResponse(dict(
             set_attributes=attributes,
-            messages=[]
+            messages=[
+                dict(
+                    text=response_label,
+                    quick_replies=replies
+                )
+            ]
         ))
     else:
         return JsonResponse(dict(status='error', error=str(response['error'])))

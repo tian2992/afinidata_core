@@ -9,6 +9,10 @@ class MilestoneFormModel(forms.ModelForm):
         model = Milestone
         fields = ('name', 'code', 'area',  'value', 'secondary_value', 'description')
 
+    def __init__(self, *args, **kwargs):
+        super(MilestoneFormModel, self).__init__(*args, **kwargs)
+        self.fields['description'].required = False
+
 
 class ResponseMilestoneForm(forms.Form):
     RESPONSE_CHOICES = (
