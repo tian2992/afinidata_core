@@ -97,8 +97,7 @@ def milestone_by_area(request, id):
         return JsonResponse(dict(
             set_attributes=dict(
                 milestone_id=response['data']['milestone']['id'],
-                milestone_name=response['data']['milestone']['name'],
-                area=response['data']['milestone']['area']
+                milestone_name=response['data']['milestone']['name']
             ),
             messages=[]
         ))
@@ -125,7 +124,6 @@ def response_milestone_for_instance(request, milestone_id):
 
         set_attributes = dict(
             step=response['data']['step'],
-            area=response['data']['area'],
             value=response['data']['value'],
             instance=response['data']['instance']
         )

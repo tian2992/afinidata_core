@@ -4,7 +4,7 @@ from chatfuel import views
 app_name = 'chatfuel'
 
 urlpatterns = [
-    path('get_user_instances/<int:id>', views.get_user_instances, name='get_user_instances'),
+    path('get_user_instances/<int:id>/', views.get_user_instances, name='get_user_instances'),
     path('get_milestone_by_area/<int:id>/', views.milestone_by_area, name='milestone_by_area'),
     path('response_milestone_for_instance/<int:milestone_id>/', views.response_milestone_for_instance,\
          name='response_milestone_by_area'),
