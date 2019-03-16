@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'entities.apps.EntitiesConfig',
     'bots.apps.BotsConfig',
     'instances.apps.InstancesConfig',
-    'chatfuel.apps.ChatfuelConfig'
+    'chatfuel.apps.ChatfuelConfig',
+    'messenger_users.apps.MessengerUsersConfig'
 ]
 
 MIDDLEWARE = [
