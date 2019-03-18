@@ -24,5 +24,6 @@ urlpatterns = [
     path('entities/', include('entities.urls', namespace='entities')),
     path('bots/', include('bots.urls', namespace='bots')),
     path('instances/', include('instances.urls', namespace='instances')),
-    path('chatfuel/', include('chatfuel.urls', namespace='chatfuel'))
+    path('chatfuel/', include('chatfuel.urls', namespace='chatfuel')),
+    path('users/', include('messenger_users.urls', namespace='messenger_users'))
 ]

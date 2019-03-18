@@ -90,11 +90,22 @@ DATABASES = {
         'PASSWORD': os.getenv('CORE_DATABASE_PASSWORD'),
         'HOST': os.getenv('CORE_DATABASE_HOST'),
         'PORT': os.getenv('CORE_DATABASE_PORT'),
+    },
+    'messenger_users_db': {
+        'ENGINE': os.getenv('CORE_MESSENGER_USERS_DATABASE_ENGINE'),
+        'NAME': os.getenv('CORE_MESSENGER_USERS_DATABASE_NAME'),
+        'USER': os.getenv('CORE_MESSENGER_USERS__DATABASE_USER'),
+        'PASSWORD': os.getenv('CORE_MESSENGER_USERS_DATABASE_PASSWORD'),
+        'HOST': os.getenv('CORE_MESSENGER_USERS_DATABASE_HOST'),
+        'PORT': os.getenv('CORE_MESSENGER_USERS_DATABASE_PORT'),
     }
 }
 
+DATABASE_ROUTERS = ['messenger_users.routers.MessengerUsersRouter']
+
 print('database name')
 print(os.getenv('CORE_DATABASE_NAME'))
+print(os.getenv('CORE_MESSENGER_USERS_DATABASE_NAME'))
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
 
