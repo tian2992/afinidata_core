@@ -1,0 +1,13 @@
+{% extends 'attributes/base.html' %}
+
+{% block title %}
+    Afinidata | Create Attribute
+{% endblock %}
+
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Create Attribute">
+    </form>
+{% endblock %}

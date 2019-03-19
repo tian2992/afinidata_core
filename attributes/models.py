@@ -1,16 +1,21 @@
 from django.db import models
-from attributes.models import Attribute
 
 
-class Entity(models.Model):
+attribute_types = (
+    ('numeric', 'Numeric'),
+    ('string', 'String'),
+    ('date', 'Date')
+)
+
+
+class Attribute(models.Model):
     name = models.CharField(max_length=255, unique=True)
-    description = models.TextField(null=True)
+    type = models.CharField(max_length=20, choices=attribute_types, default='string')
     created_at = models.DateTimeField(auto_now=True)
     updated_at = models.DateTimeField(auto_now_add=True)
-    attributes = models.ManyToManyField(Attribute)
 
     class Meta:
-        app_label = 'entities'
+        app_label = 'attributes'
 
     def __str__(self):
         return self.name
