@@ -1,9 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import TemplateView, UpdateView, CreateView, DeleteView, View
 from entities.models import Entity
+from attributes.models import Attribute
 from django.urls import reverse_lazy
 from django.http import JsonResponse
 from entities.forms import EntityAttributeForm
+from django.contrib import messages
 
 
 class HomeView(TemplateView):
@@ -64,7 +66,12 @@ class AddAttributeToEntityView(View):
         form = EntityAttributeForm(request.POST, entity=kwargs['id'])
 
         if form.is_valid():
-            print('valid')
+            attribute = Attribute.objects.get(id=request.POST['attribute'])
+            print(attribute)
+            print(entity)
+            entity.attributes.add(attribute)
+            messages.success(request, 'Attribute has been added to entity')
+            return redirect('entities:entity', id=entity.pk)
         else:
             print('invalid')
         return JsonResponse(dict(world='hello'))

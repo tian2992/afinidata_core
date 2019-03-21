@@ -3,9 +3,26 @@
 {% block title %}Afinidata | {{ entity.name }}{% endblock %}
 
 {% block content %}
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
     <h1>{{ entity.name }}</h1>
 
     <div class="content">
         {{ entity.description }}
+    </div>
+
+    <div class="attributes">
+        <h3>Attributes</h3>
+        <ul>
+            {% for attribute in entity.attributes.all %}
+                <li>{{ attribute.name }}</li>
+            {% endfor %}
+
+        </ul>
     </div>
 {% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'forms/base.html' %}
+
+{% block title %}Afinidata | Form: {{ form.name }}{% endblock %}
+
+{% block content %}
+    <h1>Form | {{ form.name }} <small>{{ form.pk }}</small></h1>
+
+    <div class="content">
+        <ul>
+            <li><strong>Entity: </strong><a href="{% url 'entities:entity' id=form.entity.pk %}">{{ form.entity.name }}</a></li>
+        </ul>
+    </div>
+
+    <div class="attributes">
+        Attributes
+        <ul>
+            {% for validation in form.validation_set.all %}
+                <li>{{ validation.attribute.name }} -
+                    <a href="{% url 'attributes:attribute' id=validation.attribute.pk %}">View Attribute</a> -
+                    <a href="{% url 'forms:validation' id=validation.pk %}">View validations</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

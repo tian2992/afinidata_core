@@ -4,6 +4,7 @@ from attributes import views
 app_name = 'attributes'
 
 urlpatterns = [
-    path('', views.AttributesView.as_view(), name="attributes-list"),
-    path('new/', views.NewAttributeView.as_view(), name="attributes-new")
+    path('', views.AttributesView.as_view(), name="index"),
+    path('new/', views.NewAttributeView.as_view(), name="new"),
+    path('<int:id>/', views.AttributeView.as_view(), name="attribute")
 ]

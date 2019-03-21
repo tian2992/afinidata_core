@@ -9,8 +9,5 @@ class Entity(models.Model):
     updated_at = models.DateTimeField(auto_now_add=True)
     attributes = models.ManyToManyField(Attribute)
 
-    class Meta:
-        app_label = 'entities'
-
     def __str__(self):
         return self.name
