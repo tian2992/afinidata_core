@@ -9,8 +9,7 @@ class EntityAttributeForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.entity = kwargs.pop('entity')
         super(EntityAttributeForm, self).__init__(*args, **kwargs)
-        entity = Entity.objects.get(id=self.entity)
-        queryset = Attribute.objects.all().difference(entity.attributes.all())
+        queryset = Attribute.objects.all().difference(self.entity.attributes.all())
         print(queryset)
         self.fields['attribute'] = forms.ModelChoiceField(queryset)
 

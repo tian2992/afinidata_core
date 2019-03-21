@@ -57,21 +57,17 @@ class DeleteEntityView(DeleteView):
 class AddAttributeToEntityView(View):
 
     def get(self, request, *args, **kwargs):
-        form = EntityAttributeForm(request.POST or None, entity=kwargs['id'])
+        entity = get_object_or_404(Entity, id=kwargs['id'])
+        form = EntityAttributeForm(request.POST or None, entity=entity)
         return render(request, 'entities/add_attribute.html', dict(form=form))
 
     def post(self, request, *args, **kwargs):
 
-        print(request.POST)
-        entity = Entity.objects.get(pk=kwargs['id'])
-
-        form = EntityAttributeForm(request.POST, entity=kwargs['id'])
+        entity = get_object_or_404(Entity, id=kwargs['id'])
+        form = EntityAttributeForm(request.POST, entity=entity)
 
         if form.is_valid():
-            return JsonResponse(dict(world='hello'))
             attribute = Attribute.objects.get(id=request.POST['attribute'])
-            print(attribute)
-            print(entity)
             entity.attributes.add(attribute)
             messages.success(request, 'Attribute has been added to entity')
             return redirect('entities:entity', id=entity.pk)
