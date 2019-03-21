@@ -61,11 +61,14 @@ class AddAttributeToEntityView(View):
         return render(request, 'entities/add_attribute.html', dict(form=form))
 
     def post(self, request, *args, **kwargs):
+
+        print(request.POST)
         entity = Entity.objects.get(pk=kwargs['id'])
 
         form = EntityAttributeForm(request.POST, entity=kwargs['id'])
 
         if form.is_valid():
+            return JsonResponse(dict(world='hello'))
             attribute = Attribute.objects.get(id=request.POST['attribute'])
             print(attribute)
             print(entity)

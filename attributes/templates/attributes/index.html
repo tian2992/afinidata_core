@@ -6,4 +6,26 @@
 
 {% block content %}
     <h1>List</h1>
+
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <ul>
+        {% for attribute in attributes %}
+            <li>{{ attribute.name }} |
+                <a href="{% url 'attributes:attribute' id=attribute.pk %}">View</a> -
+                <a href="{% url 'attributes:edit' id=attribute.pk %}">Edit</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <div class="actions">
+        <a href="{% url 'attributes:new' %}">New attribute</a>
+    </div>
+
 {% endblock %}

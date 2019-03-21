@@ -15,8 +15,17 @@
 
     <ul>
         {% for form in forms %}
-            <li>{{ form.name }}</li>
+            <li>
+                {{ form.name }} |
+                <a href="{% url 'forms:form' id=form.pk %}">View</a> -
+                <a href="{% url 'forms:edit' id=form.pk %}">Edit</a> -
+                <a href="{% url 'forms:add_attribute' id=form.pk %}">Add Attribute</a>
+            </li>
         {% endfor %}
     </ul>
+
+    <div class="actions">
+        <a href="{% url 'forms:new' %}">New form</a>
+    </div>
 
 {% endblock %}
