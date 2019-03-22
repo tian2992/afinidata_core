@@ -1,0 +1,13 @@
+{% extends 'levels/base.html' %}
+
+{% block title %}New Level{% endblock %}
+
+{% block content %}
+    <h1>New Level</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Create Level">
+    </form>
+{% endblock %}

@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'chatfuel.apps.ChatfuelConfig',
     'messenger_users.apps.MessengerUsersConfig',
     'attributes.apps.AttributesConfig',
-    'forms.apps.FormsConfig'
+    'forms.apps.FormsConfig',
+    'levels.apps.LevelsConfig'
 ]
 
 MIDDLEWARE = [
