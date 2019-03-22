@@ -18,7 +18,7 @@
         <h4>Instance details:</h4>
         <ul>
             <li><strong>Bot: </strong><span>{{ instance.bot.name }}</span></li>
-            <li><strong>Entity: </strong><span>{{ instance.entity.name }}</span></li>
+            <li><strong>Entity: </strong><a href="{% url 'entities:entity' id=instance.entity.id %}">{{ instance.entity.name }}</a></li>
             <li><strong>Created at: </strong><span>{{ instance.created_at }}</span></li>
             <li><strong>Updated at: </strong><span>{{ instance.updated_at }}</span></li>
         </ul>

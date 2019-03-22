@@ -30,7 +30,7 @@
         <h3>Forms</h3>
         <ul>
             {% for form in entity.form_set.all %}
-                <li>{{ form }}</li>
+                <li>{{ form }} - <a href="{% url 'forms:form' id=form.pk %}">View</a></li>
             {% endfor %}
             
         </ul>
