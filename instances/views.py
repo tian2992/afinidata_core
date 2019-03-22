@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
-from instances.models import Instance
+from instances.models import Instance,  Score, ScoreTracking, AttributeValue
 from django.views.generic import TemplateView, CreateView, UpdateView, DeleteView
 from django.views import View
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from instances.forms import ScoreModelForm, ScoreTrackingModelForm
-from instances.models import Score, ScoreTracking
+from instances.forms import ScoreModelForm, ScoreTrackingModelForm, InstanceAttributeValueForm
+from django.contrib import messages
 
 
 class HomeView(TemplateView):
@@ -58,7 +58,25 @@ class DeleteInstanceView(DeleteView):
 class AddAttributeToInstance(View):
 
     def get(self, request, *args, **kwargs):
-        return render(self.request, 'instances/add_attribute_value.html', dict())
+        instance = get_object_or_404(Instance, id=kwargs['id'])
+        queryset = instance.entity.attributes.all()
+        form = InstanceAttributeValueForm(request.GET or None, queryset=queryset)
+        return render(self.request, 'instances/add_attribute_value.html', dict(form=form))
+
+    def post(self, request, *args, **kwargs):
+        instance = get_object_or_404(Instance, id=kwargs['id'])
+        attribute = get_object_or_404(instance.entity.attributes, id=request.POST['attribute'])
+        if attribute:
+            queryset = instance.entity.attributes.filter(id=request.POST['attribute'])
+        form = InstanceAttributeValueForm(request.POST, queryset=queryset)
+
+        if form.is_valid():
+            attr = AttributeValue.objects.create(instance=instance, attribute=attribute, value=request.POST['value'])
+            print(attr)
+            messages.success(request, 'Attribute has been added to instance')
+            return redirect('instances:instance', id=kwargs['id'])
+
+        return JsonResponse(dict(hello='world'))
 
 
 @csrf_exempt
