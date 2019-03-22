@@ -25,4 +25,20 @@
 
         </ul>
     </div>
+
+    <div class="forms">
+        <h3>Forms</h3>
+        <ul>
+            {% for form in entity.form_set.all %}
+                <li>{{ form }}</li>
+            {% endfor %}
+            
+        </ul>
+    </div>
+
+    <div class="actions">
+        <a href="{% url 'entities:edit' id=entity.pk %}">Edit Entity</a> -
+        <a href="{% url 'entities:add_attribute' id=entity.pk %}">Add attribute</a> -
+        <a href="{% url 'forms:new' %}">Add Form</a>
+    </div>
 {% endblock %}

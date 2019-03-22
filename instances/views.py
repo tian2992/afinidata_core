@@ -55,6 +55,12 @@ class DeleteInstanceView(DeleteView):
     success_url = reverse_lazy('instances:index')
 
 
+class AddAttributeToInstance(View):
+
+    def get(self, request, *args, **kwargs):
+        return render(self.request, 'instances/add_attribute_value.html', dict())
+
+
 @csrf_exempt
 def score(request):
 
