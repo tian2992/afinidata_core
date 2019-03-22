@@ -1,0 +1,16 @@
+{% extends 'sections/base.html' %}
+
+{% block title %}Afinidata | {{ section.name }}{% endblock %}
+
+{% block content %}
+    <h1>section {{ section.name }} <small>{{ section.pk }}</small></h1>
+
+    <div class="content">
+        <ul>
+        </ul>
+    </div>
+
+    <div class="actions">
+        <a href="{% url 'sections:edit' id=section.pk %}">Edit</a>
+    </div>
+{% endblock %}

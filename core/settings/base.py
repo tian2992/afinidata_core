@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'messenger_users.apps.MessengerUsersConfig',
     'attributes.apps.AttributesConfig',
     'forms.apps.FormsConfig',
-    'levels.apps.LevelsConfig'
+    'levels.apps.LevelsConfig',
+    'sections.apps.SectionsConfig'
 ]
 
 MIDDLEWARE = [

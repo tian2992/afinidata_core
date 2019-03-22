@@ -6,7 +6,7 @@
     <ul>
         {% for level in levels %}
             <li>
-                {{ level.name }} |
+                {{ level.name }} ({{ level.min }} - {{ level.max }}) |
                 <a href="{% url 'levels:level' id=level.pk %}">View</a> -
                 <a href="{% url 'levels:edit' id=level.pk %}">Edit</a>
             </li>
