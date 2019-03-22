@@ -58,13 +58,15 @@ class AddAttributeToEntityView(View):
 
     def get(self, request, *args, **kwargs):
         entity = get_object_or_404(Entity, id=kwargs['id'])
-        form = EntityAttributeForm(request.POST or None, entity=entity)
+        queryset = Attribute.objects.all().difference(entity.attributes.all())
+        form = EntityAttributeForm(request.POST or None, queryset=queryset)
         return render(request, 'entities/add_attribute.html', dict(form=form))
 
     def post(self, request, *args, **kwargs):
 
         entity = get_object_or_404(Entity, id=kwargs['id'])
-        form = EntityAttributeForm(request.POST, entity=entity)
+        queryset = Attribute.objects.filter(id=request.POST['attribute'])
+        form = EntityAttributeForm(request.POST, queryset=queryset)
 
         if form.is_valid():
             attribute = Attribute.objects.get(id=request.POST['attribute'])

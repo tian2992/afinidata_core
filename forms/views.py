@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import CreateView, UpdateView, DeleteView, View, TemplateView
 from forms.models import Form, Validation
+from attributes.models import Attribute
 from django.contrib import messages
 from django.http import JsonResponse
 from forms.forms import FormAttributeForm
@@ -50,12 +51,15 @@ class AddAttributeToForm(View):
 
     def get(self, request, *args, **kwargs):
         view_form = get_object_or_404(Form, id=kwargs['id'])
-        form = FormAttributeForm(request.POST or None, form=view_form)
+        queryset = view_form.entity.attributes.all().difference(view_form.attributes.all())
+        form = FormAttributeForm(request.POST or None, queryset=queryset)
         return render(request, 'forms/add_attribute.html', dict(form=form))
 
     def post(self, request, *args, **kwargs):
         view_form = get_object_or_404(Form, id=kwargs['id'])
-        form = FormAttributeForm(request.POST, form=view_form)
+        queryset = Attribute.objects.filter(id=request.POST['attribute'])
+        form = FormAttributeForm(request.POST, queryset=queryset)
+        print(form)
 
         if form.is_valid():
             params = form.cleaned_data
