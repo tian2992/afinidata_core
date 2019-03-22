@@ -3,9 +3,19 @@
 {% block title %}Afinidata | {{ instance.name }}{% endblock %}
 
 {% block content %}
+
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+    
     <h1>{{ instance.name }}</h1>
 
     <div class="content">
+        <h4>Instance details:</h4>
         <ul>
             <li><strong>Bot: </strong><span>{{ instance.bot.name }}</span></li>
             <li><strong>Entity: </strong><span>{{ instance.entity.name }}</span></li>
@@ -13,10 +23,19 @@
             <li><strong>Updated at: </strong><span>{{ instance.updated_at }}</span></li>
         </ul>
 
+        <h4>Areas:</h4>
         <ul>
             {% for score in instance.score_set.all %}
                 <li><strong>{{ score.area.name }}</strong> - {{ score.value }}</li>
             {% endfor %}
         </ul>
+
+        <h4>Attributes:</h4>
+        <ul>
+            {% for attr in instance.attributevalue_set.all %}
+                <li><strong>{{ attr.attribute.name }}</strong> - {{ attr.value }}</li>
+            {% endfor %}
+        </ul>
+        <a href="{% url 'instances:add_attribute' id=instance.pk %}">Add attribute</a>
     </div>
 {% endblock %}

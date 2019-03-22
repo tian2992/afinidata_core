@@ -59,7 +59,7 @@ class AddAttributeToInstance(View):
 
     def get(self, request, *args, **kwargs):
         instance = get_object_or_404(Instance, id=kwargs['id'])
-        queryset = instance.entity.attributes.all()
+        queryset = instance.entity.attributes.all().difference(instance.attributes.all())
         form = InstanceAttributeValueForm(request.GET or None, queryset=queryset)
         return render(self.request, 'instances/add_attribute_value.html', dict(form=form))
 
