@@ -23,7 +23,7 @@
             <li><strong>Updated at: </strong><span>{{ instance.updated_at }}</span></li>
         </ul>
 
-        <h4>Areas:</h4>
+        <h4>Scores:</h4>
         <ul>
             {% for score in instance.score_set.all %}
                 <li><strong>{{ score.area.name }}</strong> - {{ score.value }}</li>
