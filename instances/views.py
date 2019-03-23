@@ -1,12 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
-from instances.models import Instance,  Score, ScoreTracking, AttributeValue
+from instances.models import Instance,  Score, ScoreTracking, AttributeValue, InstanceSection
 from django.views.generic import TemplateView, CreateView, UpdateView, DeleteView
 from django.views import View
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from instances.forms import ScoreModelForm, ScoreTrackingModelForm, InstanceAttributeValueForm
+from instances.forms import ScoreModelForm, ScoreTrackingModelForm, InstanceAttributeValueForm, \
+     InstanceSectionForm
 from django.contrib import messages
+from areas.models import Area, Section
+from levels.models import Level
 
 
 class HomeView(TemplateView):
@@ -122,3 +125,30 @@ def instances_by_user(request, id):
             instances_to_return.append(dict(id=instance.pk, name=instance.name))
 
         return JsonResponse(dict(status='founded', data=dict(instances=instances_to_return)))
+
+
+class InstanceSectionView(View):
+
+    def get(self, request, *args, **kwargs):
+        instance = get_object_or_404(Instance, id=kwargs['id'])
+        queryset = Area.objects.all().difference(instance.areas.all())
+        form = InstanceSectionForm(None, queryset=queryset)
+        return render(request, 'instances/section_to_instance.html', dict(form=form))
+
+    def post(self, request, *args, **kwargs):
+        instance = get_object_or_404(Instance, id=kwargs['id'])
+        queryset = Area.objects.filter(id=request.POST['area'])
+        form = InstanceSectionForm(request.POST, queryset=queryset)
+
+        if form.is_valid():
+            level = Level.objects.get(max__gte=int(request.POST['value_to_init']),
+                                      min__lte=int(request.POST['value_to_init']))
+            area = get_object_or_404(Area, id=request.POST['area'])
+            section = get_object_or_404(Section, level=level, area=area)
+            instance_section = InstanceSection.objects.create(value_to_init=request.POST['value_to_init'],
+                                                              section=section,
+                                                              instance=instance,
+                                                              area=area)
+            print(instance_section)
+            messages.success(request, 'Instance has been added to section "%s".' % section.name)
+            return redirect('instances:instance', id=instance.pk)

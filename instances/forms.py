@@ -1,6 +1,7 @@
 from django import forms
 from instances.models import Score, ScoreTracking, Instance
 from attributes.models import Attribute
+from areas.models import Area
 
 
 class ScoreModelForm(forms.ModelForm):
@@ -32,3 +33,13 @@ class InstanceAttributeValueForm(forms.Form):
         self.queryset = kwargs.pop('queryset')
         super(InstanceAttributeValueForm, self).__init__(*args, **kwargs)
         self.fields['attribute'].queryset = self.queryset
+
+
+class InstanceSectionForm(forms.Form):
+    area = forms.ModelChoiceField(queryset=Area.objects.all())
+    value_to_init = forms.IntegerField()
+
+    def __init__(self, *args, **kwargs):
+        self.queryset = kwargs.pop('queryset')
+        super(InstanceSectionForm, self).__init__(*args, **kwargs)
+        self.fields['area'].queryset = self.queryset

@@ -36,6 +36,20 @@
                 <li><strong>{{ attr.attribute.name }}</strong> - {{ attr.value }}</li>
             {% endfor %}
         </ul>
+
+        <h4>Sections: </h4>
+        <ul>
+            {% for section in instance.sections.all %}
+                <li>
+                    <strong>{{ section.name }}</strong> -
+                    <span>({{ section.level.name }} {{ section.level.min }} - {{ section.level.max }})</span> |
+                    <span>{{ section.area.name }}</span> |
+                    <a href="{% url 'sections:section' id=section.pk %}">View</a> -
+                    <a href="{% url 'sections:edit' id=section.pk %}">Edit</a>
+                </li>
+            {% endfor %}
+
+        </ul>
         <a href="{% url 'instances:add_attribute' id=instance.pk %}">Add attribute</a>
     </div>
 {% endblock %}
