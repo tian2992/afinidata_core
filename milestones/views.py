@@ -63,37 +63,32 @@ def response_instance_to_milestone(request, id):
     if request.method == 'GET':
         return JsonResponse(dict(status='error', error='invalid params'))
 
+    print(request.POST)
+
     milestone = get_object_or_404(Milestone, pk=id)
 
     form = ResponseMilestoneForm(request.POST)
 
     if form.is_valid():
-        try:
-            step = Step.objects.get(step=request.POST['step'])
-        except Exception as e:
-            print(e)
-            return JsonResponse(dict(status='error', error=str(e)))
-
-        instance = Instance.objects.get(pk=request.POST['instance'])
+        print('valid')
+        instance = Instance.objects.get(id=request.POST['instance'])
         response = request.POST['response']
-        score = Score.objects.get(area=milestone.area, instance=instance)
-        value_to_response = score.value
 
         if response == 'true':
-            value_to_response = value_to_response + step.value
-        else:
-            value_to_response = value_to_response - step.value
+            score = Score.objects.update_or_create(instance=instance, area=milestone.area, defaults=dict(
+                instance=instance,
+                area=milestone.area,
+                value=milestone.value
+            ))
+            print(score)
 
         new_response = Response.objects.create(milestone=milestone, instance=instance, response=response)
-        response_type = 'increment' if response == 'true' else 'decrement'
+        print(new_response)
         return JsonResponse(dict(
             status='finished',
             data=dict(
-                step=int(request.POST['step']) + 1,
                 area=milestone.area.pk,
-                instance=instance.pk,
-                value=value_to_response,
-                type=response_type
+                instance=instance.pk
             )
         ))
 

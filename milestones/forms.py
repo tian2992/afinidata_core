@@ -20,5 +20,4 @@ class ResponseMilestoneForm(forms.Form):
         ('false', 'no')
     )
     instance = forms.ModelChoiceField(queryset=Instance.objects.all())
-    step = forms.IntegerField()
     response = forms.ChoiceField(choices=RESPONSE_CHOICES)

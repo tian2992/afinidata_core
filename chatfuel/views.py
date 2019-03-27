@@ -5,6 +5,8 @@ from django.http import JsonResponse
 from areas.forms import MilestonesByAreaForm
 from milestones.forms import ResponseMilestoneForm
 from instances.forms import ScoreModelForm, InstanceModelForm
+from instances.models import Instance
+from areas.models import Area
 import requests
 
 
@@ -84,9 +86,15 @@ def milestone_by_area(request, id):
     if request.method == 'POST':
         return JsonResponse(dict(status='error', error='Invalid method'))
 
-    request_uri = settings.DOMAIN_URL + '/areas/' + str(id) + '/milestones/'
-    form = MilestonesByAreaForm(request.GET)
-    if form.is_valid():
+    try:
+        instance = Instance.objects.get(id=id)
+        area = Area.objects.get(id=request.GET['area'])
+    except Exception as e:
+        return JsonResponse(dict(status='error', error='Invalid params. %s' % e))
+
+    request_uri = settings.DOMAIN_URL + '/instances/' + str(id) + '/milestone/'
+
+    if area and instance:
         print(request.GET)
         r = requests.get(request_uri, params=request.GET)
         response = r.json()

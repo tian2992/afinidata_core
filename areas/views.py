@@ -8,7 +8,7 @@ from areas.forms import AreaFormModel, MilestonesByAreaForm
 from areas.models import Area
 from milestones.models import Milestone, Step
 import random
-
+from django.contrib import messages
 
 class HomeView(TemplateView):
     template_name = 'areas/index.html'
@@ -30,7 +30,7 @@ class EditAreaView(UpdateView):
     def form_valid(self, form):
         area = form.save(commit=False)
         area.save()
-
+        messages.success(self.request, 'Area with name: "%s" has been updated.' % area.name)
         return redirect('areas:area', id=area.pk)
 
 
@@ -50,7 +50,8 @@ class NewAreaView(View):
         form = AreaFormModel(request.POST)
 
         if form.is_valid():
-            form.save()
+            area = form.save()
+            messages.success(request, 'Area with name: "%s" has been created' % area.name)
             return redirect('areas:index')
         else:
             return render(request, self.template_name, {'form': form})
