@@ -1,12 +1,14 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from areas.forms import MilestonesByAreaForm
 from milestones.forms import ResponseMilestoneForm
 from instances.forms import ScoreModelForm, InstanceModelForm
-from instances.models import Instance
-from areas.models import Area
+from instances.models import Instance, InstanceSection
+from areas.models import Area, Section
+from chatfuel.forms import SetSectionToInstance
+from milestones.models import Milestone
 import requests
 
 
@@ -102,9 +104,19 @@ def milestone_by_area(request, id):
         if(response['status']) == 'error':
             return JsonResponse(dict(status='error', error=response['error']))
 
+        if not response['data']['milestone']:
+            return JsonResponse(dict(
+                set_attributes=dict(
+                    milestone_id=None,
+                    milestone_name=None,
+                    core_message=response['data']['message']
+                ),
+                messages=[]
+            ))
+
         return JsonResponse(dict(
             set_attributes=dict(
-                milestone_id=response['data']['milestone']['id'],
+                milestone=response['data']['milestone']['id'],
                 milestone_name=response['data']['milestone']['name']
             ),
             messages=[]
@@ -119,7 +131,6 @@ def response_milestone_for_instance(request, milestone_id):
 
     if request.method == 'GET':
         return JsonResponse(dict(status='error', error='Invalid method'))
-
     form = ResponseMilestoneForm(request.POST)
 
     if form.is_valid():
@@ -130,10 +141,15 @@ def response_milestone_for_instance(request, milestone_id):
         if response['status'] == 'error':
             return JsonResponse(dict(status='error', error=response['error']))
 
+        instance = Instance.objects.get(id=request.POST['instance'])
+        milestone = Milestone.objects.get(id=milestone_id)
+
         set_attributes = dict(
-            step=response['data']['step'],
-            value=response['data']['value'],
-            instance=response['data']['instance']
+            core_message='Response for instance: %s to milestone: "%s" is %s' % (
+                instance.name,
+                milestone.name,
+                request.POST['response']
+            )
         )
         return JsonResponse(dict(set_attributes=set_attributes, messages=[]))
     else:
@@ -156,3 +172,35 @@ def set_area_value_to_instance(request):
     response = r.json()
 
     return JsonResponse(response)
+
+
+@csrf_exempt
+def set_sections_by_value(request):
+    if request.method == 'GET':
+        return JsonResponse(dict(status='error', error='Invalid method'))
+
+    form = SetSectionToInstance(request.POST)
+    if not form.is_valid():
+        return JsonResponse(dict(status='error', error='Invalid params.'))
+
+    instance = get_object_or_404(Instance, id=request.POST['instance'])
+    value = int(request.POST['value'])
+    areas = Area.objects.all()
+    for area in areas:
+        section = None
+        try:
+            section = Section.objects.get(area=area, level__min__lte=value, level__max__gte=value)
+            print(section)
+        except Exception as e:
+            print('error: ', str(e))
+            pass
+        if section:
+            new_instance_section = InstanceSection.objects.update_or_create(instance=instance, area=area, defaults=dict(
+                value_to_init=value,
+                instance=instance,
+                area=area,
+                section=section
+            ))
+            print(new_instance_section)
+
+    return JsonResponse(dict(set_attributes=dict(), messages=[]))

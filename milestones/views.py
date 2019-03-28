@@ -75,10 +75,19 @@ def response_instance_to_milestone(request, id):
         response = request.POST['response']
 
         if response == 'true':
+            old_score = None
+            new_value = milestone.value
+            try:
+                old_score = Score.objects.get(instance=instance, area=milestone.area)
+                if old_score.value > milestone.value:
+                    new_value = old_score.value
+            except Exception as e:
+                print(e)
+                pass
             score = Score.objects.update_or_create(instance=instance, area=milestone.area, defaults=dict(
                 instance=instance,
                 area=milestone.area,
-                value=milestone.value
+                value=new_value
             ))
             print(score)
 
