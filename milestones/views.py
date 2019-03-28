@@ -103,5 +103,3 @@ def response_instance_to_milestone(request, id):
 
     else:
         return JsonResponse(dict(status='error', error='invalid params'))
-
-

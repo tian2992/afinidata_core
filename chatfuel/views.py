@@ -9,6 +9,7 @@ from instances.models import Instance, InstanceSection
 from areas.models import Area, Section
 from chatfuel.forms import SetSectionToInstance
 from milestones.models import Milestone
+from django.views.generic import View
 import requests
 
 
@@ -186,6 +187,8 @@ def set_sections_by_value(request):
     instance = get_object_or_404(Instance, id=request.POST['instance'])
     value = int(request.POST['value'])
     areas = Area.objects.all()
+    areas_string = ''
+    sections_string = ''
     for area in areas:
         section = None
         try:
@@ -195,6 +198,8 @@ def set_sections_by_value(request):
             print('error: ', str(e))
             pass
         if section:
+            areas_string = areas_string + "%s, " % area.name
+            sections_string = sections_string + "%s, " % section.name
             new_instance_section = InstanceSection.objects.update_or_create(instance=instance, area=area, defaults=dict(
                 value_to_init=value,
                 instance=instance,
@@ -203,4 +208,29 @@ def set_sections_by_value(request):
             ))
             print(new_instance_section)
 
-    return JsonResponse(dict(set_attributes=dict(), messages=[]))
+    return JsonResponse(dict(set_attributes=dict(
+        core_message='Instance has been added to sections %s to areas %s' % (sections_string, areas_string)
+    ), messages=[]))
+
+
+class Evaluator(View):
+
+    def get(self, request):
+        try:
+            instance = Instance.objects.get(id=request.GET['instance'])
+            area = Area.objects.get(id=request.GET['area'])
+        except Exception as e:
+            return JsonResponse(dict(status='error', error='Invalid params: %s' % e))
+
+        request_uri = '%s/instances/%s/evaluator/?area=%s' % (settings.DOMAIN_URL, instance.pk, area.pk)
+        r = requests.get(request_uri)
+        response = r.json()
+        print(response)
+        return JsonResponse(dict(
+            set_attributes=dict(
+                instance_has_up=response['data']['up'],
+                instance_has_down=response['data']['down'],
+                core_message=response['data']['message']
+            ),
+            messages=[]
+        ))
