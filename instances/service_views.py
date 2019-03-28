@@ -44,20 +44,29 @@ def milestone_by_area(request, id):
         return JsonResponse(dict(status='error', error='Invalid params: %s' % str(e)))
 
     day = datetime.now() - timedelta(days=7)
+    old_responses_day = datetime.now() - timedelta(days=90)
     responses = Response.objects.filter(instance=instance, created_at__gte=day)
+    other_responses = Response.objects.filter(instance=instance, created_at__gte=old_responses_day, response='true')
     milestones_responses = set()
     for response in responses:
+        print(response.created_at, response.response, response.milestone.name, response.milestone.pk)
         milestones_responses.add(response.milestone.pk)
+    for response in other_responses:
+        milestones_responses.add(response.milestone.pk)
+    print('milestones responses: ', milestones_responses)
     milestones = Milestone.objects.filter(area=area,
                                           value__lte=level.max,
                                           value__gte=level.min)\
         .exclude(id__in=milestones_responses)\
-        .order_by('value')
+        .order_by('value', 'created_at')
 
-    try:
-        milestone = milestones.first()
-    except Exception as e:
-        return JsonResponse(dict(status='error', error='%s' % str(e)))
+    if milestones.count() <= 0:
+        return JsonResponse(dict(status='done', data=dict(
+            milestone=None,
+            message='Not milestones for this instance'
+        )))
+
+    milestone = milestones.first()
 
     response = dict(
         status='done',

@@ -4,7 +4,8 @@ from django.db import models
 attribute_types = (
     ('numeric', 'Numeric'),
     ('string', 'String'),
-    ('date', 'Date')
+    ('date', 'Date'),
+    ('boolean', 'Boolean')
 )
 
 

@@ -63,7 +63,7 @@ class Response(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return str(self.pk) + '__' + self.instance.name + '__response'
+        return "%s__%s__%s%s__%s" % (self.pk, self.instance.name, self.milestone.pk, self.milestone.name, self.response)
 
 
 class AttributeValue(models.Model):

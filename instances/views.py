@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
-from instances.models import Instance,  Score, ScoreTracking, AttributeValue, InstanceSection
+from instances.models import Instance,  Score, ScoreTracking, AttributeValue, InstanceSection, Response
 from django.views.generic import TemplateView, CreateView, UpdateView, DeleteView
 from django.views import View
 from django.http import JsonResponse
@@ -10,6 +10,9 @@ from instances.forms import ScoreModelForm, ScoreTrackingModelForm, InstanceAttr
 from django.contrib import messages
 from areas.models import Area, Section
 from levels.models import Level
+from datetime import datetime, timedelta
+from milestones.models import Milestone
+from attributes.models import Attribute
 
 
 class HomeView(TemplateView):
@@ -152,3 +155,103 @@ class InstanceSectionView(View):
             print(instance_section)
             messages.success(request, 'Instance has been added to section "%s".' % section.name)
             return redirect('instances:instance', id=instance.pk)
+
+
+class Evaluator(View):
+
+    def get(self, request, *args, **kwargs):
+        instance = get_object_or_404(Instance, id=kwargs['id'])
+        area = get_object_or_404(Area, id=int(request.GET['area']))
+        section = get_object_or_404(Section, instance=instance, area=area)
+        last_milestones = Milestone.objects.filter(area=area,
+                                                   value__gte=section.level.min,
+                                                   value__lte=section.level.max).order_by('-value', '-created_at')[:3]
+
+        last_milestones_ids = [milestone.pk for milestone in last_milestones]
+
+        instance_responses = Response.objects.filter(instance=instance,
+                                                     created_at__gte=(datetime.now() - timedelta(days=30)))
+
+        search_responses = instance_responses.filter(milestone_id__in=last_milestones_ids)\
+            .order_by('-milestone_id', '-id')
+        if search_responses.filter(milestone_id=last_milestones_ids[0]).count() > 0:
+            print(search_responses.filter(milestone_id=last_milestones_ids[0]))
+            if search_responses.count() >= 3:
+                instance_has_up = True
+
+                for milestone in last_milestones:
+                    milestone_init = False
+                    responses = search_responses.filter(milestone__id=milestone.pk)
+                    for response in responses:
+                        if response.response == 'true':
+                            milestone_init = True
+                    print(milestone.pk, milestone.name, milestone_init, responses.count())
+
+                    if not milestone_init:
+                        instance_has_up = False
+
+                if instance_has_up:
+                    attribute_name = "%s__has__up" % area.name
+                    attribute = Attribute.objects.update_or_create(name=attribute_name,
+                                                                   defaults=dict(name=attribute_name, type='boolean'))
+                    attribute = attribute[0]
+                    instance.entity.attributes.add(attribute)
+                    attribute_value = AttributeValue.objects.update_or_create(instance=instance,
+                                                                              attribute=attribute,
+                                                                              defaults=dict(value=True))
+                    return JsonResponse(dict(status='done', data=dict(message='Instance must be up section.',
+                                                                      up=True, down=False)))
+
+                if not instance_has_up:
+                    return JsonResponse(dict(status='done', data=dict(message='Instance not change section.',
+                                                                      up=False,
+                                                                      down=False)))
+            else:
+                return JsonResponse(dict(status='done', data=dict(message='Instance not change section.',
+                                                                  up=False, down=False)))
+
+        first_milestones = Milestone.objects.filter(area=area,
+                                                    value__gte=section.level.min,
+                                                    value__lte=section.level.max).order_by('value', 'created_at')[:3]
+        first_milestones_ids = [milestone.pk for milestone in first_milestones]
+        search_responses = instance_responses.filter(milestone_id__in=first_milestones_ids)\
+            .order_by('milestone_id', 'id')
+
+        if search_responses.filter(milestone_id=first_milestones_ids[0], response='false').count() > 0:
+            instance_has_down = True
+            index = 0
+            while instance_has_down:
+                if search_responses[index].response == 'true':
+                    instance_has_down = False
+                index = index + 1
+                if index == search_responses.count():
+                    break
+
+            if instance_has_down:
+                change_level_number = section.level.min - 1
+                try:
+                    new_section = Section.objects.get(level__max__gte=change_level_number,
+                                                      level__min__lte=change_level_number)
+                    attribute = Attribute.objects.update_or_create(name="%s__has__descended" % area.name,
+                                                                   defaults=dict(type='string'))
+                    attribute = attribute[0]
+                    instance.entity.attributes.add(attribute)
+                    instance.attributevalue_set.create(attribute=attribute,
+                                                       value='instance: %s descended of %s (%s) to %s (%s). date: %s' %
+                                                             (instance.name, section.name, section.pk, new_section.name,
+                                                              new_section.pk, datetime.now()))
+                    actual_section_to_instance = InstanceSection.objects.get(instance=instance,
+                                                                             section=section)
+                    print(actual_section_to_instance)
+                    actual_section_to_instance.delete()
+                    new_section_to_instance = InstanceSection.objects.create(instance=instance, section=new_section,
+                                                                             area=area,
+                                                                             value_to_init=change_level_number)
+                    print(new_section_to_instance)
+                    return JsonResponse(dict(status='done', data=dict(message='Instance down section',
+                                                                      up=False, down=True)))
+                except Exception as e:
+                    return JsonResponse(dict(status='error', error='%s' % str(e)))
+
+        return JsonResponse(dict(status='done', data=dict(message='Instance not change section',
+                                                          up=False, down=False)))
