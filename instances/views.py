@@ -170,10 +170,20 @@ class Evaluator(View):
         last_milestones_ids = [milestone.pk for milestone in last_milestones]
 
         instance_responses = Response.objects.filter(instance=instance,
-                                                     created_at__gte=(datetime.now() - timedelta(days=30)))
+                                                     created_at__gte=(datetime.now() - timedelta(days=30)),
+                                                     milestone__value__gte=section.level.min,
+                                                     milestone__value__lte=section.level.max)
+
+        if instance_responses.count() <= 0:
+            return JsonResponse(dict(status='done', data=dict(up=False, down=False,
+                                                              message='Instance not change section')))
 
         search_responses = instance_responses.filter(milestone_id__in=last_milestones_ids)\
             .order_by('-milestone_id', '-id')
+        if len(last_milestones_ids) <= 0:
+            return JsonResponse(dict(status='done', data=dict(up=False, down=False,
+                                                              message='Instance not change section')))
+        print(search_responses.filter(milestone_id=last_milestones_ids[0]).count())
         if search_responses.filter(milestone_id=last_milestones_ids[0]).count() > 0:
             print(search_responses.filter(milestone_id=last_milestones_ids[0]))
             if search_responses.count() >= 3:
@@ -255,3 +265,35 @@ class Evaluator(View):
 
         return JsonResponse(dict(status='done', data=dict(message='Instance not change section',
                                                           up=False, down=False)))
+
+
+@csrf_exempt
+def up_instance(request, id):
+
+    if request.method == 'GET':
+        return JsonResponse(dict(status='error', error='Invalid method'))
+
+    try:
+        instance = Instance.objects.get(id=id)
+        area = Area.objects.get(id=request.POST['area'])
+        attribute = instance.attributevalue_set.get(attribute__name="%s__has__up" % area.name)
+    except Exception as e:
+        return JsonResponse(dict(status='error', error='Invalid params. %s' % e))
+
+    if attribute.value != 'True':
+        return JsonResponse(dict(status='done', data=dict(message='Instance not qualified to up in area')))
+
+    instance_section = instance.instancesection_set.get(area=area)
+    new_value_to_init = instance_section.section.level.max + 2
+    new_section = Section.objects.get(level__min__lte=new_value_to_init, level__max__gte=new_value_to_init, area=area)
+    new_instance_section = instance.instancesection_set.update_or_create(area=area, defaults=dict(
+        section=new_section,
+        value_to_init=new_value_to_init
+    ))
+    attribute.delete()
+    return JsonResponse(dict(
+        status='done',
+        data=dict(
+            message='Instance: %s has up to section: %s' % (instance.name, new_section.name)
+        )
+    ))

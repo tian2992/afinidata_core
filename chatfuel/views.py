@@ -234,3 +234,23 @@ class Evaluator(View):
             ),
             messages=[]
         ))
+
+
+@csrf_exempt
+def up_instance(request, id):
+    if request.method == 'GET':
+        return JsonResponse(dict(set_attributes=dict(core_message='Invalid method')), messages=[])
+    try:
+        area = request.POST['area']
+    except Exception as e:
+        return JsonResponse(dict(set_attributes=dict(core_message='Invalid params: %s' % e), messages=[]))
+
+    request_uri = "%s/instances/%s/up/" % (settings.DOMAIN_URL, id)
+    r = requests.post(request_uri, request.POST)
+    response = r.json()
+    if response['status'] == 'error':
+        core_message = response['error']
+    else:
+        core_message = response['data']['message']
+    return JsonResponse(dict(set_attributes=dict(core_message=core_message, up=None, down=None),
+                             messages=[]))
