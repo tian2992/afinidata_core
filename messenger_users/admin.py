@@ -1,3 +1,4 @@
 from django.contrib import admin
+from messenger_users.models import User, UserData
 
-# Register your models here.
+admin.site.register(User)

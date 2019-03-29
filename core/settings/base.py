@@ -147,6 +147,7 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = 'static/'
 DOMAIN_URL = os.getenv('CORE_DOMAIN_URL')
 CONTENT_MANAGER_URL = os.getenv('CONTENT_MANAGER_URL')
 

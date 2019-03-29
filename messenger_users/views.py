@@ -1,13 +1,16 @@
-from django.shortcuts import render
-from django.views.generic import TemplateView
+from django.shortcuts import render, redirect
+from django.views.generic import ListView, TemplateView
 from messenger_users.models import User
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-class HomeView(TemplateView):
+class HomeView(LoginRequiredMixin, ListView):
 
     template_name = 'messenger_users/index.html'
+    context_object_name = 'users'
+    paginate_by = 2
 
-    def get_context_data(self, **kwargs):
-        users = User.objects.all()
-        print(users)
-        return dict(users=users)
+    def get_queryset(self):
+        return User.objects.all()
+
