@@ -8,6 +8,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 class HomeView(LoginRequiredMixin, ListView):
 
     template_name = 'messenger_users/index.html'
+    login_url = '/admin/login/'
+    redirect_field_name = 'redirect_to'
     context_object_name = 'users'
     paginate_by = 2
 
