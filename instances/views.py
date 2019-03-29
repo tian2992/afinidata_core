@@ -13,6 +13,9 @@ from levels.models import Level
 from datetime import datetime, timedelta
 from milestones.models import Milestone
 from attributes.models import Attribute
+from messenger_users.models import User
+from django.conf import settings
+import requests
 
 
 class HomeView(TemplateView):
@@ -290,6 +293,7 @@ def up_instance(request, id):
         section=new_section,
         value_to_init=new_value_to_init
     ))
+    print(new_instance_section)
     attribute.delete()
     return JsonResponse(dict(
         status='done',
@@ -297,3 +301,26 @@ def up_instance(request, id):
             message='Instance: %s has up to section: %s' % (instance.name, new_section.name)
         )
     ))
+
+
+class GetActivityView(View):
+
+    def get(self, request, *args, **kwargs):
+
+        try:
+            instance = Instance.objects.get(id=kwargs['id'])
+            area = Area.objects.get(id=request.GET['area'])
+            user = User.objects.get(id=instance.user_id)
+            section = instance.sections.get(area=area)
+        except Exception as e:
+            return JsonResponse(dict(status='error', error='Invalid params. %s' % e))
+
+        value = section.level.min + 1
+        request_uri = "%s/posts/by_limit/?area_id=%s&value=%s&username=%s" % (settings.CONTENT_MANAGER_URL,
+                                                                              area.pk, value, user.username)
+
+        r = requests.get(request_uri)
+        response = r.json()
+
+        print(response)
+        return JsonResponse(response)

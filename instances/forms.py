@@ -22,7 +22,7 @@ class InstanceModelForm(forms.ModelForm):
 
     class Meta:
         model = Instance
-        fields = ('entity', 'bot', 'name', 'bot_user_id')
+        fields = ('entity', 'bot', 'name', 'user_id')
 
 
 class InstanceAttributeValueForm(forms.Form):

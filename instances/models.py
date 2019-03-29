@@ -13,7 +13,7 @@ class Instance(models.Model):
     attributes = models.ManyToManyField(Attribute, through='AttributeValue')
     sections = models.ManyToManyField(Section, through='InstanceSection')
     areas = models.ManyToManyField(Area, through='InstanceSection')
-    bot_user_id = models.IntegerField(default=1, null=True)
+    user_id = models.IntegerField(default=1, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

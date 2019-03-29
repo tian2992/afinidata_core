@@ -254,3 +254,19 @@ def up_instance(request, id):
         core_message = response['data']['message']
     return JsonResponse(dict(set_attributes=dict(core_message=core_message, up=None, down=None),
                              messages=[]))
+
+
+class GetActivity(View):
+
+    def get(self, request, **kwargs):
+        try:
+            instance = Instance.objects.get(id=kwargs['id'])
+            area = Area.objects.get(id=request.GET['area'])
+        except Exception as e:
+            return JsonResponse(dict(set_attributes=dict(core_message='Invalid params. %s' % e), messages=[]))
+
+        request_uri = '%s/instances/%s/get_activity/?area=%s' % (settings.DOMAIN_URL, instance.pk, area.pk)
+
+        r = requests.get(request_uri)
+        response = r.json()
+        return JsonResponse(response)
