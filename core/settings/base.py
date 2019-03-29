@@ -98,7 +98,7 @@ DATABASES = {
     'messenger_users_db': {
         'ENGINE': os.getenv('CORE_MESSENGER_USERS_DATABASE_ENGINE'),
         'NAME': os.getenv('CORE_MESSENGER_USERS_DATABASE_NAME'),
-        'USER': os.getenv('CORE_MESSENGER_USERS__DATABASE_USER'),
+        'USER': os.getenv('CORE_MESSENGER_USERS_DATABASE_USER'),
         'PASSWORD': os.getenv('CORE_MESSENGER_USERS_DATABASE_PASSWORD'),
         'HOST': os.getenv('CORE_MESSENGER_USERS_DATABASE_HOST'),
         'PORT': os.getenv('CORE_MESSENGER_USERS_DATABASE_PORT'),
