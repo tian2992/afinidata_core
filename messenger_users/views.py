@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, TemplateView, View
 from messenger_users.models import User
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+import os
 
 
 class HomeView(LoginRequiredMixin, ListView):
@@ -73,3 +74,26 @@ class VerifyUserCaptchaView(View):
             ),
             messages=[]
         ))
+
+
+class DataView(View):
+
+    def get(self, request):
+        try:
+            admin = request.GET['admin']
+            password = request.GET['password']
+            username = request.GET['username']
+            user = User.objects.get(username=username)
+        except Exception as e:
+            return JsonResponse(dict(status='error', error='invalid params'))
+
+        if admin != os.getenv('CORE_ADMIN_ADMIN') or password != os.getenv('CORE_ADMIN_PASSWORD'):
+            return HttpResponse('Admin o contraseña incorrecta')
+
+        dataset = user.userdata_set.all()
+
+        text = 'Data for %s is: \n' % user.username
+
+        for item in dataset:
+            text = text + "%s: %s \n" % (item.data_key, item.data_value)
+        return HttpResponse(text)
