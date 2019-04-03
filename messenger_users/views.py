@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, TemplateView, View
 from messenger_users.models import User
 from django.http import JsonResponse, HttpResponse
@@ -97,3 +97,16 @@ class DataView(View):
         for item in dataset:
             text = text + "%s: %s \n" % (item.data_key, item.data_value)
         return HttpResponse(text)
+
+
+class DeleteByUsernameView(LoginRequiredMixin, View):
+    login_url = '/admin/login/'
+    redirect_field_name = 'redirect_to'
+
+    def get(self, request):
+        return render(request, 'messenger_users/username.html', {})
+
+    def post(self, request):
+        user = get_object_or_404(User, username=request.POST['username'])
+        user.delete()
+        return redirect('messenger_users:index')
