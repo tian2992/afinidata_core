@@ -13,7 +13,7 @@ class HomeView(LoginRequiredMixin, ListView):
     login_url = '/admin/login/'
     redirect_field_name = 'redirect_to'
     context_object_name = 'users'
-    paginate_by = 50
+    paginate_by = 100
 
     def get_queryset(self):
         return User.objects.all()
