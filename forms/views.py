@@ -1,32 +1,38 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import CreateView, UpdateView, DeleteView, View, TemplateView
+from django.views.generic import CreateView, UpdateView, DeleteView, View, TemplateView, ListView, DetailView
 from forms.models import Form, Validation
 from attributes.models import Attribute
 from django.contrib import messages
 from django.http import JsonResponse
 from forms.forms import FormAttributeForm
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-class HomeView(TemplateView):
+class HomeView(LoginRequiredMixin, ListView):
     template_name = 'forms/index.html'
+    model = Form
+    context_object_name = 'forms'
+    paginate_by = 20
+    login_url = '/admin/login/'
+    redirect_field_name = 'redirect_to'
 
-    def get_context_data(self, **kwargs):
-        forms = Form.objects.all()
-        return dict(forms=forms)
 
-
-class FormView(TemplateView):
+class FormView(LoginRequiredMixin, DetailView):
     template_name = 'forms/form.html'
+    model = Form
+    pk_url_kwarg = 'id'
+    context_object_name = 'form'
+    login_url = '/admin/login/'
+    redirect_field_name = 'redirect_to'
 
-    def get_context_data(self, **kwargs):
-        form = get_object_or_404(Form, id=kwargs['id'])
-        return dict(form=form)
 
-
-class CreateFormView(CreateView):
+class CreateFormView(LoginRequiredMixin, CreateView):
     template_name = 'forms/new.html'
     model = Form
     fields = ('name', 'entity')
+    login_url = '/admin/login/'
+    redirect_field_name = 'redirect_to'
 
     def form_valid(self, form):
         form.save()
@@ -34,12 +40,14 @@ class CreateFormView(CreateView):
         return redirect('forms:index')
 
 
-class UpdateFormView(UpdateView):
+class UpdateFormView(LoginRequiredMixin, UpdateView):
     template_name = 'forms/edit.html'
     model = Form
     fields = ('name', 'entity')
     pk_url_kwarg = 'id'
     context_object_name = 'form'
+    login_url = '/admin/login/'
+    redirect_field_name = 'redirect_to'
 
     def form_valid(self, form):
         form.save()
@@ -47,7 +55,10 @@ class UpdateFormView(UpdateView):
         return redirect('forms:index')
 
 
-class AddAttributeToForm(View):
+class AddAttributeToForm(LoginRequiredMixin, View):
+
+    login_url = '/admin/login/'
+    redirect_field_name = 'redirect_to'
 
     def get(self, request, *args, **kwargs):
         view_form = get_object_or_404(Form, id=kwargs['id'])
@@ -74,20 +85,22 @@ class AddAttributeToForm(View):
             return render(request, 'forms/add_attribute.html', dict(form=form))
 
 
-class ValidationView(TemplateView):
+class ValidationView(LoginRequiredMixin, DetailView):
 
     template_name = 'forms/validation.html'
+    model = Validation
+    pk_url_kwarg = 'id'
+    login_url = '/admin/login/'
+    redirect_field_name = 'redirect_to'
 
-    def get_context_data(self, **kwargs):
-        validation = get_object_or_404(Validation, id=kwargs['id'])
-        return dict(validation=validation)
 
-
-class ValidationEditView(UpdateView):
+class ValidationEditView(LoginRequiredMixin, UpdateView):
     model = Validation
     template_name = 'forms/validation-edit.html'
     fields = ('min', 'max', 'distinct_of', 'match_with')
     pk_url_kwarg = 'id'
+    login_url = '/admin/login/'
+    redirect_field_name = 'redirect_to'
 
     def form_valid(self, form):
         validation = form.save()

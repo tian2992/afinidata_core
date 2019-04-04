@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy
 from instances.models import Instance,  Score, ScoreTracking, AttributeValue, InstanceSection, Response
-from django.views.generic import TemplateView, CreateView, UpdateView, DeleteView
+from django.views.generic import TemplateView, CreateView, UpdateView, DeleteView, ListView, DetailView
 from django.views import View
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -16,55 +16,66 @@ from attributes.models import Attribute
 from messenger_users.models import User
 from django.conf import settings
 import requests
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-class HomeView(TemplateView):
+class HomeView(LoginRequiredMixin, ListView):
     template_name = 'instances/index.html'
+    model = Instance
+    context_object_name = 'instances'
+    paginate_by = 10
+    login_url = '/admin/login/'
+    redirect_field_name = 'redirect_to'
 
-    def get_context_data(self, **kwargs):
-        instances = Instance.objects.all()
-        return dict(instances=instances)
 
-
-class InstanceView(TemplateView):
+class InstanceView(LoginRequiredMixin, DetailView):
     template_name = 'instances/instance.html'
+    model = Instance
+    pk_url_kwarg = 'id'
+    login_url = '/admin/login/'
+    redirect_field_name = 'redirect_to'
 
-    def get_context_data(self, **kwargs):
-        instance = get_object_or_404(Instance, pk=kwargs['id'])
 
-        return dict(instance=instance)
-
-
-class NewInstanceView(CreateView):
+class NewInstanceView(LoginRequiredMixin, CreateView):
     model = Instance
     template_name = 'instances/new.html'
-    fields = ('entity', 'bot', 'name', 'bot_user_id')
+    fields = ('entity', 'bot', 'name', 'user_id')
+    login_url = '/admin/login/'
+    redirect_field_name = 'redirect_to'
 
     def form_valid(self, form):
         form.save()
         return redirect('instances:index')
 
 
-class EditInstanceView(UpdateView):
+class EditInstanceView(LoginRequiredMixin, UpdateView):
     model = Instance
-    fields = ('entity', 'bot', 'name', 'bot_user_id')
+    fields = ('entity', 'bot', 'name', 'user_id')
     template_name = 'instances/edit.html'
     pk_url_kwarg = 'id'
     context_object_name = 'instance'
+    login_url = '/admin/login/'
+    redirect_field_name = 'redirect_to'
 
     def form_valid(self, form):
         entity = form.save()
         return redirect('instances:edit', entity.pk)
 
 
-class DeleteInstanceView(DeleteView):
+class DeleteInstanceView(LoginRequiredMixin, DeleteView):
     model = Instance
     template_name = 'instances/delete.html'
     pk_url_kwarg = 'id'
     success_url = reverse_lazy('instances:index')
+    login_url = '/admin/login/'
+    redirect_field_name = 'redirect_to'
 
 
-class AddAttributeToInstance(View):
+class AddAttributeToInstance(LoginRequiredMixin, View):
+
+    login_url = '/admin/login/'
+    redirect_field_name = 'redirect_to'
 
     def get(self, request, *args, **kwargs):
         instance = get_object_or_404(Instance, id=kwargs['id'])
@@ -133,7 +144,9 @@ def instances_by_user(request, id):
         return JsonResponse(dict(status='founded', data=dict(instances=instances_to_return)))
 
 
-class InstanceSectionView(View):
+class InstanceSectionView(LoginRequiredMixin, View):
+    login_url = '/admin/login/'
+    redirect_field_name = 'redirect_to'
 
     def get(self, request, *args, **kwargs):
         instance = get_object_or_404(Instance, id=kwargs['id'])

@@ -6,9 +6,13 @@ from milestones.models import Milestone, Step
 from instances.models import Instance, Response, Score
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-class HomeView(TemplateView):
+class HomeView(LoginRequiredMixin, TemplateView):
+    login_url = '/admin/login/'
+    redirect_field_name = 'redirect_to'
     template_name = 'milestones/index.html'
 
     def get_context_data(self, **kwargs):
@@ -17,7 +21,9 @@ class HomeView(TemplateView):
         return dict(milestones=milestones)
 
 
-class MilestoneView(TemplateView):
+class MilestoneView(LoginRequiredMixin, TemplateView):
+    login_url = '/admin/login/'
+    redirect_field_name = 'redirect_to'
     template_name = 'milestones/milestone.html'
 
     def get_context_data(self, **kwargs):
@@ -26,7 +32,9 @@ class MilestoneView(TemplateView):
         return dict(milestone=milestone)
 
 
-class EditMilestoneView(UpdateView):
+class EditMilestoneView(LoginRequiredMixin, UpdateView):
+    login_url = '/admin/login/'
+    redirect_field_name = 'redirect_to'
     model = Milestone
     fields = ('name', 'code', 'area', 'value', 'secondary_value', 'description')
     template_name = 'milestones/edit.html'
@@ -39,7 +47,9 @@ class EditMilestoneView(UpdateView):
         return redirect('milestones:milestone', id=milestone.pk)
 
 
-class NewMilestoneView(View):
+class NewMilestoneView(LoginRequiredMixin, View):
+    login_url = '/admin/login/'
+    redirect_field_name = 'redirect_to'
     template_name = 'milestones/new.html'
 
     def post(self, request, *args, **kwargs):

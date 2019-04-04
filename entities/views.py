@@ -1,19 +1,20 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import TemplateView, UpdateView, CreateView, DeleteView, View
+from django.views.generic import TemplateView, UpdateView, CreateView, DeleteView, View, ListView, DetailView
 from entities.models import Entity
 from attributes.models import Attribute
 from django.urls import reverse_lazy
 from django.http import JsonResponse
 from entities.forms import EntityAttributeForm
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-class HomeView(TemplateView):
+class HomeView(LoginRequiredMixin, ListView):
     template_name = 'entities/index.html'
-
-    def get_context_data(self, **kwargs):
-        entities = Entity.objects.all()
-        return dict(entities=entities)
+    model = Entity
+    login_url = '/admin/login/'
+    redirect_field_name = 'redirect_to'
+    context_object_name = 'entities'
 
 
 class EntityView(TemplateView):
