@@ -17,45 +17,56 @@ class HomeView(LoginRequiredMixin, ListView):
     context_object_name = 'entities'
 
 
-class EntityView(TemplateView):
+class EntityView(LoginRequiredMixin, DetailView):
     template_name = 'entities/entity.html'
+    model = Entity
+    pk_url_kwarg = 'id'
+    context_object_name = 'entity'
+    login_url = '/admin/login/'
+    redirect_field_name = 'redirect_to'
 
-    def get_context_data(self, **kwargs):
-        entity = get_object_or_404(Entity, pk=kwargs['id'])
 
-        return dict(entity=entity)
-
-
-class NewEntityView(CreateView):
+class NewEntityView(LoginRequiredMixin, CreateView):
     model = Entity
     template_name = 'entities/new.html'
     fields = ('name', 'description')
+    context_object_name = 'entity'
+    login_url = '/admin/login/'
+    redirect_field_name = 'redirect_to'
 
     def form_valid(self, form):
-        form.save()
+        entity = form.save()
+        messages.success(self.request, 'Entity with name: %s has been created.' % entity.name)
         return redirect('entities:index')
 
 
-class EditEntityView(UpdateView):
+class EditEntityView(LoginRequiredMixin, UpdateView):
     model = Entity
     fields = ('name', 'description')
     template_name = 'entities/edit.html'
     pk_url_kwarg = 'id'
     context_object_name = 'entity'
+    login_url = '/admin/login/'
+    redirect_field_name = 'redirect_to'
 
     def form_valid(self, form):
         entity = form.save()
+        messages.success(self.request, 'Entity with name: %s has been updated.' % entity.name)
         return redirect('entities:edit', entity.pk)
 
 
-class DeleteEntityView(DeleteView):
+class DeleteEntityView(LoginRequiredMixin, DeleteView):
     model = Entity
     template_name = 'entities/delete.html'
     pk_url_kwarg = 'id'
+    login_url = '/admin/login/'
+    redirect_field_name = 'redirect_to'
     success_url = reverse_lazy('entities:index')
 
 
-class AddAttributeToEntityView(View):
+class AddAttributeToEntityView(LoginRequiredMixin, View):
+    login_url = '/admin/login/'
+    redirect_field_name = 'redirect_to'
 
     def get(self, request, *args, **kwargs):
         entity = get_object_or_404(Entity, id=kwargs['id'])
@@ -75,5 +86,5 @@ class AddAttributeToEntityView(View):
             messages.success(request, 'Attribute has been added to entity')
             return redirect('entities:entity', id=entity.pk)
         else:
-            print('invalid')
-        return JsonResponse(dict(world='hello'))
+            messages.success(request, 'Invalid params.')
+            return redirect('entities:entity', id=entity.pk)

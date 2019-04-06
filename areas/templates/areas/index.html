@@ -12,7 +12,8 @@
             <li>
                 {{ area.name }} -
                 <a href="{% url 'areas:area' id=area.pk %}">View</a> -
-                <a href="{% url 'areas:edit' id=area.pk %}">Edit</a>
+                <a href="{% url 'areas:edit' id=area.pk %}">Edit</a> -
+                <a href="{% url 'areas:delete' id=area.pk %}">Delete</a>
             </li>
         {% endfor %}
     </ul>
