@@ -5,8 +5,14 @@ app_name = 'messenger_users'
 
 urlpatterns = [
     path('', views.HomeView.as_view(), name='index'),
+    path('<int:id>/', views.UserView.as_view(), name='user'),
+    path('<int:id>/set_post_group/', views.SetRandomPostGroupForUser.as_view(), name='set_post_group'),
+    path('<int:id>/data/<int:attribute_id>/edit/', views.EditAttributeView.as_view(), name='attribute_edit'),
+    path('<int:id>/data/<int:attribute_id>/delete/', views.DeleteAttributeView.as_view(), name='attribute_delete'),
+    path('get_id_by_username/', views.GetIDByUsernameView.as_view(), name='get_id_by_username'),
     path('captcha/', views.UserCaptchaView.as_view(), name='captcha'),
     path('verify/', views.VerifyUserCaptchaView.as_view(), name='verify'),
     path('data/', views.DataView.as_view(), name='data'),
-    path('delete/', views.DeleteByUsernameView.as_view(), name="delete")
+    path('delete/', views.DeleteByUsernameView.as_view(), name="delete"),
+    path('<int:id>/set_attributes/', views.set_attributes_for_user, name='set_attributes')
 ]

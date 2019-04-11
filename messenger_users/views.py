@@ -1,9 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import ListView, TemplateView, View
-from messenger_users.models import User
+from django.views.generic import ListView, View, DetailView, UpdateView, DeleteView
+from messenger_users.models import User, UserData
 from django.http import JsonResponse, HttpResponse
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.decorators.csrf import csrf_exempt
+from django.urls import reverse_lazy
+from django.contrib import messages
+import random
 import os
 
 
@@ -14,9 +17,16 @@ class HomeView(LoginRequiredMixin, ListView):
     redirect_field_name = 'redirect_to'
     context_object_name = 'users'
     paginate_by = 100
+    model = User
 
-    def get_queryset(self):
-        return User.objects.all()
+
+class UserView(LoginRequiredMixin, DetailView):
+    model = User
+    pk_url_kwarg = 'id'
+    context_object_name = 'user'
+    template_name = 'messenger_users/user.html'
+    login_url = '/admin/login/'
+    redirect_field_name = 'redirect_to'
 
 
 class UserCaptchaView(View):
@@ -26,11 +36,11 @@ class UserCaptchaView(View):
         try:
             username = request.GET['username']
             user = User.objects.get(username=username)
-            quest = request.GET['quest']
+            api_key = request.GET['api_key']
         except Exception as e:
             return JsonResponse(dict(status='error', error='Invalid params.'))
 
-        if quest != 'afini':
+        if api_key != os.getenv('CORE_QUEST_KEY'):
             return JsonResponse(dict(status='error', error='Invalid params.'))
 
         captcha = '00%sCHF' % user.id
@@ -51,11 +61,11 @@ class VerifyUserCaptchaView(View):
         try:
             user = User.objects.get(username=request.GET['username'])
             response = str(request.GET['response'])
-            quest = request.GET['quest']
+            api_key = request.GET['api_key']
         except Exception as e:
             return JsonResponse(dict(status='error', error='Invalid params.'))
 
-        if quest != 'afini':
+        if api_key != os.getenv('CORE_QUEST_KEY'):
             return JsonResponse(dict(status='error', error='Invalid params.'))
 
         captcha = '00%sCHF' % user.id
@@ -110,3 +120,91 @@ class DeleteByUsernameView(LoginRequiredMixin, View):
         user = get_object_or_404(User, username=request.POST['username'])
         user.delete()
         return redirect('messenger_users:index')
+
+
+@csrf_exempt
+def set_attributes_for_user(request, id):
+
+    if request.method == 'GET':
+        return JsonResponse(dict(status='error', error='Invalid method.'))
+
+    try:
+        user = User.objects.get(id=id)
+    except Exception as e:
+        return JsonResponse(dict(status='error', error='invalid params.'))
+
+    for data_key in request.POST:
+        data_value = request.POST[data_key]
+        new_data = UserData.objects.update_or_create(user=user, data_key=data_key, defaults=dict(
+            data_value=data_value
+        ))
+        print(new_data)
+    return JsonResponse(dict(hello='world'))
+
+
+class SetRandomPostGroupForUser(View):
+
+    def get(self, request, *args, **kwargs):
+
+        try:
+            user = User.objects.get(id=kwargs['id'])
+        except Exception as e:
+            return JsonResponse(status='error', error='Invalid params.')
+
+        random_choices = ['random', 'ranking', 'feedback']
+        data_value = random.choice(random_choices)
+        data_key = 'posts_group'
+
+        new_attribute = user.userdata_set.update_or_create(data_key=data_key, defaults=dict(
+            data_value=data_value
+        ))
+        print(new_attribute)
+        return JsonResponse(dict(status='done', data=dict(data_key=data_key, data_value=data_value,
+                                                          user_id=user.pk)))
+
+
+class EditAttributeView(LoginRequiredMixin, UpdateView):
+    model = UserData
+    pk_url_kwarg = 'attribute_id'
+    fields = ('data_value',)
+    template_name = 'messenger_users/data_edit.html'
+    context_object_name = 'data'
+    login_url = '/admin/login/'
+    redirect_field_name = 'redirect_to'
+
+    def get_object(self, queryset=None):
+        object = get_object_or_404(UserData, user_id=self.kwargs['id'], id=self.kwargs['attribute_id'])
+        return object
+
+    def form_valid(self, form):
+        data = form.save()
+        messages.success(self.request, 'Attribute with name: %s has been updated' % data.data_key)
+        return redirect('messenger_users:user', id=self.kwargs['id'])
+
+
+class DeleteAttributeView(LoginRequiredMixin, DeleteView):
+    model = UserData
+    pk_url_kwarg = 'attribute_id'
+    template_name = 'messenger_users/data_delete.html'
+    context_object_name = 'data'
+    login_url = '/admin/login/'
+    redirect_field_name = 'redirect_to'
+    success_url = reverse_lazy('messenger_users:index')
+
+    def get_object(self, queryset=None):
+        object = get_object_or_404(UserData, user_id=self.kwargs['id'], id=self.kwargs['attribute_id'])
+        return object
+
+
+class GetIDByUsernameView(View):
+
+    def get(self, request):
+        try:
+            api_key = request.GET['api_key']
+            username = request.GET['username']
+            user = User.objects.get(username=username)
+            print(user)
+            print(os.getenv('CORE_QUEST_KEY'))
+        except Exception as e:
+            print(str(e))
+            return JsonResponse(dict(status='error', error="Invalid params."))

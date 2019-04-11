@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import TemplateView, UpdateView, CreateView, DeleteView, View, ListView, DetailView
+from django.views.generic import UpdateView, CreateView, DeleteView, View, ListView, DetailView
 from entities.models import Entity
 from attributes.models import Attribute
 from django.urls import reverse_lazy
