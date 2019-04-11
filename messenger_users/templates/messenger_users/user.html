@@ -17,4 +17,14 @@
         {% endfor %}
     </ul>
 
+    <h2>Instances: </h2>
+
+    <ul>
+        {% for instance in instances %}
+            <li>{{ instance.name }} |
+                <a href="{% url 'instances:instance' id=instance.pk %}">View</a>
+            </li>
+        {% endfor %}
+    </ul>
+
 {% endblock %}

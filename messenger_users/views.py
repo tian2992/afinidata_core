@@ -6,6 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse_lazy
 from django.contrib import messages
+from instances.models import Instance
 import random
 import os
 
@@ -27,6 +28,11 @@ class UserView(LoginRequiredMixin, DetailView):
     template_name = 'messenger_users/user.html'
     login_url = '/admin/login/'
     redirect_field_name = 'redirect_to'
+
+    def get_context_data(self, **kwargs):
+        user_id = kwargs['object'].pk
+        instances = Instance.objects.filter(user_id=user_id)
+        return dict(user=kwargs['object'], instances=instances)
 
 
 class UserCaptchaView(View):
