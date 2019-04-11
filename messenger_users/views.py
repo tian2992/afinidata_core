@@ -165,12 +165,12 @@ class SetRandomPostGroupForUser(View):
             data_value=data_value
         ))
         print(new_attribute)
-        return JsonResponse(dict(status='done', data=dict(data_key=data_key, data_value=data_value,
-                                                          user_id=user.pk,
-                                                          set_attributes=dict(
-                                                              posts_group=data_value
-                                                          ),
-                                                          messages=[])))
+        return JsonResponse(dict(status='done',
+                                 data=dict(data_key=data_key, data_value=data_value, user_id=user.pk),
+                                 set_attributes = dict(
+                                    posts_group=data_value
+                                 ),
+                                 messages=[]))
 
 
 class EditAttributeView(LoginRequiredMixin, UpdateView):
