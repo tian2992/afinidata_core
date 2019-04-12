@@ -192,7 +192,8 @@ class Evaluator(View):
                                                      milestone__value__gte=section.level.min,
                                                      milestone__value__lte=section.level.max)
 
-        print(instance_responses)
+        for response in instance_responses:
+            print(response.pk, response.response, response.milestone.id)
 
         if instance_responses.count() <= 0:
             return JsonResponse(dict(status='done', data=dict(up=False, down=False,
@@ -200,7 +201,8 @@ class Evaluator(View):
 
         search_responses = instance_responses.filter(milestone_id__in=last_milestones_ids)\
             .order_by('-milestone_id', '-id')
-        print(search_responses)
+        for response in search_responses:
+            print(response.pk, response.response, response.milestone.id)
 
         if len(last_milestones_ids) <= 0:
             return JsonResponse(dict(status='done', data=dict(up=False, down=False,
@@ -250,7 +252,8 @@ class Evaluator(View):
         first_milestones_ids = [milestone.pk for milestone in first_milestones]
         search_responses = instance_responses.filter(milestone_id__in=first_milestones_ids)\
             .order_by('milestone_id', 'id')
-        print(search_responses)
+        for response in search_responses:
+            print(response.pk, response.response, response.milestone.id)
 
         if search_responses.filter(milestone_id=first_milestones_ids[0], response='false').count() > 0:
             instance_has_down = True
