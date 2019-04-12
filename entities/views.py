@@ -70,7 +70,8 @@ class AddAttributeToEntityView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         entity = get_object_or_404(Entity, id=kwargs['id'])
-        queryset = Attribute.objects.all().difference(entity.attributes.all())
+        exclude_arr = [item.pk for item in entity.attributes.all()]
+        queryset = Attribute.objects.all().exclude(id__in=exclude_arr)
         form = EntityAttributeForm(request.POST or None, queryset=queryset)
         return render(request, 'entities/add_attribute.html', dict(form=form))
 
