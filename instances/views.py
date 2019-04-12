@@ -209,8 +209,13 @@ class Evaluator(View):
                                                               message='Instance not change section')))
         print(search_responses.filter(milestone_id=last_milestones_ids[0]).count())
         if search_responses.filter(milestone_id=last_milestones_ids[0]).count() > 0:
-            print(search_responses.filter(milestone_id=last_milestones_ids[0]))
+            debug_responses = search_responses.filter(milestone_id=last_milestones_ids[0])
+
+            for response in debug_responses:
+                print(response.pk, response.response, response.milestone.id)
+
             if search_responses.count() >= 3:
+                print(search_responses.count())
                 instance_has_up = True
 
                 for milestone in last_milestones:
