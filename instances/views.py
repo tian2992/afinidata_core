@@ -192,12 +192,16 @@ class Evaluator(View):
                                                      milestone__value__gte=section.level.min,
                                                      milestone__value__lte=section.level.max)
 
+        print(instance_responses)
+
         if instance_responses.count() <= 0:
             return JsonResponse(dict(status='done', data=dict(up=False, down=False,
                                                               message='Instance not change section')))
 
         search_responses = instance_responses.filter(milestone_id__in=last_milestones_ids)\
             .order_by('-milestone_id', '-id')
+        print(search_responses)
+
         if len(last_milestones_ids) <= 0:
             return JsonResponse(dict(status='done', data=dict(up=False, down=False,
                                                               message='Instance not change section')))
@@ -238,12 +242,15 @@ class Evaluator(View):
                 return JsonResponse(dict(status='done', data=dict(message='Instance not change section.',
                                                                   up=False, down=False)))
 
+        print('not in last milestones')
+
         first_milestones = Milestone.objects.filter(area=area,
                                                     value__gte=section.level.min,
                                                     value__lte=section.level.max).order_by('value', 'created_at')[:3]
         first_milestones_ids = [milestone.pk for milestone in first_milestones]
         search_responses = instance_responses.filter(milestone_id__in=first_milestones_ids)\
             .order_by('milestone_id', 'id')
+        print(search_responses)
 
         if search_responses.filter(milestone_id=first_milestones_ids[0], response='false').count() > 0:
             instance_has_down = True
