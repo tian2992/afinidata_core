@@ -224,7 +224,7 @@ class Evaluator(View):
                     for response in responses:
                         if response.response == 'true':
                             milestone_init = True
-                    print(milestone.pk, milestone.name, milestone_init, responses.count())
+                    print(milestone.pk, milestone_init, responses.count())
 
                     if not milestone_init:
                         instance_has_up = False
