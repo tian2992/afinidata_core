@@ -79,7 +79,8 @@ class AddAttributeToInstance(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         instance = get_object_or_404(Instance, id=kwargs['id'])
-        queryset = instance.entity.attributes.all().difference(instance.attributes.all())
+        exclude_arr = [item.pk for item in instance.attributes.all()]
+        queryset = instance.entity.attributes.all().exclude(id__in=exclude_arr)
         form = InstanceAttributeValueForm(request.GET or None, queryset=queryset)
         return render(self.request, 'instances/add_attribute_value.html', dict(form=form))
 
@@ -150,7 +151,8 @@ class InstanceSectionView(LoginRequiredMixin, View):
 
     def get(self, request, *args, **kwargs):
         instance = get_object_or_404(Instance, id=kwargs['id'])
-        queryset = Area.objects.all().difference(instance.areas.all())
+        exclude_arr = [item.pk for item in instance.areas.all()]
+        queryset = Area.objects.all().exclude(id__in=exclude_arr)
         form = InstanceSectionForm(None, queryset=queryset)
         return render(request, 'instances/section_to_instance.html', dict(form=form))
 
