@@ -8,6 +8,7 @@
     <h1>Afinidata | User</h1>
 
     <ul>
+        <li>Username: {{ user.username }}</li>
         {% for attribute in user.userdata_set.all %}
             <li>
                 <strong>{{ attribute.data_key }}:</strong> <span>{{ attribute.data_value }}</span> |
