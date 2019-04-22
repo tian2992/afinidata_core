@@ -26,7 +26,7 @@ class ByGroupView(LoginRequiredMixin, ListView):
     login_url = '/admin/login/'
     redirect_field_name = 'redirect_to'
     context_object_name = 'users'
-    paginate_by = 100
+    paginate_by = 300
     model = User
 
     def get_queryset(self):
