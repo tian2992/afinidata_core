@@ -21,6 +21,24 @@ class HomeView(LoginRequiredMixin, ListView):
     model = User
 
 
+class ByGroupView(LoginRequiredMixin, ListView):
+    template_name = 'messenger_users/by_group.html'
+    login_url = '/admin/login/'
+    redirect_field_name = 'redirect_to'
+    context_object_name = 'users'
+    paginate_by = 100
+    model = User
+
+    def get_queryset(self):
+        return User.objects.filter(userdata__data_key='AB_group', userdata__data_value=self.kwargs['group'])
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(ByGroupView, self).get_context_data(**kwargs)
+        context['total'] = User.objects.filter(userdata__data_key='AB_group',
+                                               userdata__data_value=self.kwargs['group']).count()
+        return context
+
+
 class UserView(LoginRequiredMixin, DetailView):
     model = User
     pk_url_kwarg = 'id'
