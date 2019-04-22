@@ -36,6 +36,7 @@ class ByGroupView(LoginRequiredMixin, ListView):
         context = super(ByGroupView, self).get_context_data(**kwargs)
         context['total'] = User.objects.filter(userdata__data_key='AB_group',
                                                userdata__data_value=self.kwargs['group']).count()
+        context['months_groups'] = UserData.objects.filter(data_key='months_group').order_by('data_value')
         return context
 
 
