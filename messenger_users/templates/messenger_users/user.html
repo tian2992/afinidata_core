@@ -8,7 +8,13 @@
     <h1>Afinidata | User</h1>
 
     <ul>
-        <li>Username: {{ user.username }}</li>
+        <li><strong>Username: </strong><span>{{ user.username }}</span>
+            {% if user.channel_id %}
+                <span>(Migrated)</span>
+            {% endif %}
+        </li>
+        <li><strong>Last Channel ID: </strong><span>{{ user.last_channel_id }}</span></li>
+        <li><strong>Channel ID: </strong><span>{{ user.channel_id }}</span></li>
         {% for attribute in user.userdata_set.all %}
             <li>
                 <strong>{{ attribute.data_key }}:</strong> <span>{{ attribute.data_value }}</span> |
