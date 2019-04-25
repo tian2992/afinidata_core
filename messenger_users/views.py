@@ -337,3 +337,26 @@ class AssignMonthsGroupView(View):
             messages=[]
         ))
 
+
+class SetUserChannelID(View):
+
+    def get(self, request, *args, **kwargs):
+        user = get_object_or_404(User, id=kwargs['id'])
+        try:
+            channel_id = request.GET['channel_id']
+        except Exception as e:
+            return JsonResponse(dict(
+                set_attributes=dict(
+                    set_channel_id=False
+                ),
+                messages=[]
+            ))
+        user.channel_id = channel_id
+        user.save()
+
+        return JsonResponse(dict(
+            set_attributes=dict(
+                set_channel_id=True
+            ),
+            messages=[]
+        ))
