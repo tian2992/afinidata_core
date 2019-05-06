@@ -274,7 +274,8 @@ class Evaluator(View):
                 change_level_number = section.level.min - 1
                 try:
                     new_section = Section.objects.get(level__max__gte=change_level_number,
-                                                      level__min__lte=change_level_number)
+                                                      level__min__lte=change_level_number,
+                                                      area=area)
                     attribute = Attribute.objects.update_or_create(name="%s__has__descended" % area.name,
                                                                    defaults=dict(type='string'))
                     attribute = attribute[0]
