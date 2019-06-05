@@ -18,6 +18,17 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('accounts/', include('django.contrib.auth.urls')),
+    path('', include('pages.urls', namespace='pages')),
     path('areas/', include('areas.urls', namespace='areas')),
-    path('milestones/', include('milestones.urls', namespace='milestones'))
+    path('milestones/', include('milestones.urls', namespace='milestones')),
+    path('entities/', include('entities.urls', namespace='entities')),
+    path('bots/', include('bots.urls', namespace='bots')),
+    path('instances/', include('instances.urls', namespace='instances')),
+    path('chatfuel/', include('chatfuel.urls', namespace='chatfuel')),
+    path('users/', include('messenger_users.urls', namespace='messenger_users')),
+    path('attributes/', include('attributes.urls', namespace='attributes')),
+    path('forms/', include('forms.urls', namespace='forms')),
+    path('levels/', include('levels.urls', namespace='levels')),
+    path('sections/', include('sections.urls', namespace='sections'))
 ]

@@ -1,0 +1,12 @@
+{% extends 'forms/base.html' %}
+
+{% block title %}Afinidata | Forms{% endblock %}
+
+{% block content %}
+    <h1>Forms | New</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Create Form">
+    </form>
+{% endblock %}

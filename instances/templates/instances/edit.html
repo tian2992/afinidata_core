@@ -1,0 +1,20 @@
+{% extends 'bots/base.html' %}
+
+{% block title %}Afinidata | Edit Instance {{ object.name }}{% endblock %}
+
+{% block content %}
+    <h1>Edit Instance {{ object.name }}</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <div class="form-submit">
+            <input type="submit" value="Edit Instance">
+        </div>
+    </form>
+
+    <div class="links">
+        <a href="{% url 'instances:index' %}">Back to Instances</a>
+    </div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends 'instances/base.html' %}
+
+{% block title %}
+    Afinidata | Add Section
+{% endblock %}
+
+{% block content %}
+    <h1>Instance | Add section</h1>
+
+    <div class="form-content">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Add Section">
+        </form>
+    </div>
+{% endblock %}

@@ -5,9 +5,30 @@ from areas.models import Area
 class Milestone(models.Model):
     area = models.ForeignKey(Area, on_delete=models.CASCADE)
     name = models.CharField(max_length=255, unique=True)
-    value = models.FloatField()
+    code = models.CharField(max_length=255, unique=True, null=True)
+    description = models.TextField(null=True)
+    value = models.FloatField(default=0)
+    secondary_value = models.FloatField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         app_label = 'milestones'
+
+    def __str__(self):
+        return self.name
+
+
+class Step(models.Model):
+    step = models.IntegerField()
+    value = models.FloatField(default=0.0)
+    secondary_value = models.FloatField(default=0.0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = 'milestones'
+
+    def __str__(self):
+        return str(self.step)
+

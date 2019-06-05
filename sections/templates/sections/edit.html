@@ -1,0 +1,13 @@
+{% extends 'sections/base.html' %}
+
+{% block title %}Afinidata | Edit Section{% endblock %}
+
+{% block content %}
+    <h1>Level | Edit Section {{ section.pk }}</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Edit Section">
+    </form>
+{% endblock %}
