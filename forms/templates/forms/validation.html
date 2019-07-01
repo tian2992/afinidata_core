@@ -1,0 +1,28 @@
+{% extends 'forms/base.html' %}
+
+{% block title %}Afinidata | Validation{% endblock %}
+
+{% block content %}
+    <h1>Validation | {{ validation.form.name }} - {{ validation.attribute.name }}</h1>
+
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <div class="content">
+        <ul>
+            <li>min: {{ validation.min }}</li>
+            <li>max: {{ validation.max }}</li>
+            <li>Distinct of: {{ validation.distinct_of }}</li>
+            <li>Match with: {{ validation.match_with }}</li>
+        </ul>
+    </div>
+    
+    <div class="actions">
+        <a href="{% url 'forms:validation-edit' id=validation.pk %}">Edit</a>
+    </div>
+{% endblock %}

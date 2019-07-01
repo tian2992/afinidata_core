@@ -1,0 +1,33 @@
+{% extends 'sections/base.html' %}
+
+{% block title %}Afinidata | {{ section.name }}{% endblock %}
+
+{% block content %}
+    <h1>section <small>#{{ section.pk }}</small></h1>
+
+    <div class="content">
+        <ul>
+            <li><strong>Name: </strong><span>{{ section.name }}</span></li>
+            <li><strong>Area: </strong><span>{{ section.area }}</span></li>
+            <li><strong>Level Ranges: </strong>min: {{ section.level.min }} max: {{ section.level.max }}</li>
+        </ul>
+    </div>
+
+    <div class="milestones">
+        <h3>Milestones: </h3>
+        <ul>
+            {% for milestone in milestones %}
+                <li>
+                    <span>{{ milestone.name }}</span> |
+                    <a href="{% url 'milestones:milestone' id=milestone.pk %}">View</a> -
+                    <a href="{% url 'milestones:edit' id=milestone.pk%}">Edit</a>
+                </li>
+            {% endfor %}
+
+        </ul>
+    </div>
+
+    <div class="actions">
+        <a href="{% url 'sections:edit' id=section.pk %}">Edit</a>
+    </div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'attributes/base.html' %}
+
+{% block title %}
+    Afinidata | Attributes
+{% endblock %}
+
+{% block content %}
+    <h1>List</h1>
+
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <ul>
+        {% for attribute in attributes %}
+            <li>{{ attribute.name }} |
+                <a href="{% url 'attributes:attribute' id=attribute.pk %}">View</a> -
+                <a href="{% url 'attributes:edit' id=attribute.pk %}">Edit</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    {% if is_paginated %}
+      <ul class="pagination">
+        {% if page_obj.has_previous %}
+          <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+        {% else %}
+          <li class="disabled"><span>&laquo;</span></li>
+        {% endif %}
+        {% for i in paginator.page_range %}
+          {% if page_obj.number == i %}
+            <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+          {% else %}
+            <li><a href="?page={{ i }}">{{ i }}</a></li>
+          {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+          <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+        {% else %}
+          <li class="disabled"><span>&raquo;</span></li>
+        {% endif %}
+      </ul>
+    {% endif %}
+
+    <div class="actions">
+        <a href="{% url 'attributes:new' %}">New attribute</a>
+    </div>
+
+{% endblock %}

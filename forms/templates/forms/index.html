@@ -1,0 +1,53 @@
+{% extends 'forms/base.html' %}
+
+{% block title %}Afinidata | Forms{% endblock %}
+
+{% block content %}
+    <h1>Forms | List</h1>
+
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <ul>
+        {% for form in forms %}
+            <li>
+                {{ form.name }} |
+                <a href="{% url 'forms:form' id=form.pk %}">View</a> -
+                <a href="{% url 'forms:edit' id=form.pk %}">Edit</a> -
+                <a href="{% url 'forms:add_attribute' id=form.pk %}">Add Attribute</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    {% if is_paginated %}
+      <ul class="pagination">
+        {% if page_obj.has_previous %}
+          <li><a href="?page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+        {% else %}
+          <li class="disabled"><span>&laquo;</span></li>
+        {% endif %}
+        {% for i in paginator.page_range %}
+          {% if page_obj.number == i %}
+            <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+          {% else %}
+            <li><a href="?page={{ i }}">{{ i }}</a></li>
+          {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+          <li><a href="?page={{ page_obj.next_page_number }}">&raquo;</a></li>
+        {% else %}
+          <li class="disabled"><span>&raquo;</span></li>
+        {% endif %}
+      </ul>
+    {% endif %}
+
+    <div class="actions">
+        <a href="{% url 'forms:new' %}">New form</a>
+    </div>
+
+{% endblock %}

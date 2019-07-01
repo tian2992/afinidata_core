@@ -1,0 +1,13 @@
+{% extends 'forms/base.html' %}
+
+{% block title %}Afinidata | Edit validation{% endblock %}
+
+{% block content %}
+    <h1>Validation | Edit {{ validation.form.name }} - {{ validation.attribute.name }}</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Update Validation">
+    </form>
+{% endblock %}

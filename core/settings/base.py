@@ -25,7 +25,7 @@ SECRET_KEY = 't8qjq$d5v-pcehf8hsnhkg8)a#_^bryu3q+a@@f0+f#^&-^mtb'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -38,7 +38,17 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'areas.apps.AreasConfig',
-    'milestones.apps.MilestonesConfig'
+    'milestones.apps.MilestonesConfig',
+    'pages.apps.PagesConfig',
+    'entities.apps.EntitiesConfig',
+    'bots.apps.BotsConfig',
+    'instances.apps.InstancesConfig',
+    'chatfuel.apps.ChatfuelConfig',
+    'messenger_users.apps.MessengerUsersConfig',
+    'attributes.apps.AttributesConfig',
+    'forms.apps.FormsConfig',
+    'levels.apps.LevelsConfig',
+    'sections.apps.SectionsConfig'
 ]
 
 MIDDLEWARE = [
@@ -56,7 +66,7 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
+        'DIRS': [os.path.join(BASE_DIR, '../../templates')]
         ,
         'APP_DIRS': True,
         'OPTIONS': {
@@ -78,12 +88,28 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': os.getenv('CORE_DATABASE_ENGINE'),
+        'NAME': os.getenv('CORE_DATABASE_NAME'),
+        'USER': os.getenv('CORE_DATABASE_USER'),
+        'PASSWORD': os.getenv('CORE_DATABASE_PASSWORD'),
+        'HOST': os.getenv('CORE_DATABASE_HOST'),
+        'PORT': os.getenv('CORE_DATABASE_PORT'),
+    },
+    'messenger_users_db': {
+        'ENGINE': os.getenv('CORE_MESSENGER_USERS_DATABASE_ENGINE'),
+        'NAME': os.getenv('CORE_MESSENGER_USERS_DATABASE_NAME'),
+        'USER': os.getenv('CORE_MESSENGER_USERS_DATABASE_USER'),
+        'PASSWORD': os.getenv('CORE_MESSENGER_USERS_DATABASE_PASSWORD'),
+        'HOST': os.getenv('CORE_MESSENGER_USERS_DATABASE_HOST'),
+        'PORT': os.getenv('CORE_MESSENGER_USERS_DATABASE_PORT'),
     }
 }
 
+DATABASE_ROUTERS = ['messenger_users.routers.MessengerUsersRouter']
 
+print('database name')
+print(os.getenv('CORE_DATABASE_NAME'))
+print(os.getenv('CORE_MESSENGER_USERS_DATABASE_NAME'))
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
 
@@ -108,16 +134,33 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Guatemala'
 
 USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = 'static/'
+DOMAIN_URL = os.getenv('CORE_DOMAIN_URL')
+CONTENT_MANAGER_URL = os.getenv('CONTENT_MANAGER_URL')
+CORE_ADMIN_ADMIN = os.getenv('CORE_ADMIN_ADMIN')
+CORE_ADMIN_PASSWORD = os.getenv('CORE_ADMIN_PASSWORD')
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication'
+    ]
+}
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+print('domain url')
+print(DOMAIN_URL)

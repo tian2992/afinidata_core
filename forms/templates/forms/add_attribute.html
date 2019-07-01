@@ -1,0 +1,15 @@
+{% extends 'forms/base.html' %}
+
+{% block title %}
+    Afinidata | add attribute to form
+{% endblock %}
+
+{% block content %}
+    <h1>Attribute for form</h1>
+
+    <form method="post" action=".">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Add Attribute to form">
+    </form>
+{% endblock %}

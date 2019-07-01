@@ -1,0 +1,17 @@
+{% extends 'milestones/base.html' %}
+
+{% block title %}
+    Afinidata | Edit milestone {{ milestone.pk }}
+{% endblock %}
+
+{% block content %}
+    <h1>Edit milestone {{ milestone.pk }}</h1>
+
+    <form action="." method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="form-submit">
+            <input type="submit" value="Edit Milestone">
+        </div>
+    </form>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends 'levels/base.html' %}
+
+{% block title %}Afinidata | {{ level.name }}{% endblock %}
+
+{% block content %}
+    <h1>Level {{ level.name }} <small>{{ level.pk }}</small></h1>
+
+    <div class="content">
+        <ul>
+            <li><strong>Min: </strong><span>{{ level.min }}</span></li>
+            <li><strong>Max: </strong><span>{{ level.max }}</span></li>
+        </ul>
+    </div>
+
+    <div class="actions">
+        <a href="{% url 'levels:edit' id=level.pk %}">Edit</a>
+    </div>
+{% endblock %}

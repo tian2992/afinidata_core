@@ -1,0 +1,30 @@
+{% extends 'bots/base.html' %}
+
+{% block title %}Afinidata | Bots{% endblock %}
+
+{% block content %}
+
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li class="{{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+
+    <h1>Entities</h1>
+
+    <ul>
+        {% for entity in entities %}
+            <li>
+                {{ entity.name }} -
+                <a href="{% url 'entities:entity' id=entity.pk %}">View</a> -
+                <a href="{% url 'entities:edit' id=entity.pk %}">Edit</a> -
+                <a href="{% url 'entities:add_attribute' id=entity.pk %}">Add Attribute</a> -
+                <a href="{% url 'entities:delete' id=entity.pk %}">Delete</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <a href="{% url 'entities:new' %}">Create Entity</a>
+{% endblock %}
