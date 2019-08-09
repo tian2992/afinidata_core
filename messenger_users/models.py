@@ -1,3 +1,4 @@
+import uuid
 from django.db import models
 
 
@@ -11,7 +12,7 @@ class User(models.Model):
     username = models.CharField(max_length=100, null=True, unique=True)
 
     def __str__(self):
-        return self.username
+        return "User {} with m_id: {}; username = {}".format(self.pk, self.last_channel_id, self.username)
 
     class Meta:
         app_label = 'messenger_users'
@@ -28,3 +29,36 @@ class UserData(models.Model):
     class Meta:
         app_label = 'messenger_users'
 
+
+class Child(models.Model):
+    parent_user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+    name = models.CharField(max_length=50)
+    dob = models.DateTimeField(null=True)
+    created = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        app_label = 'messenger_users'
+
+
+class ChildData(models.Model):
+    child = models.ForeignKey(Child, on_delete=models.CASCADE)
+    data_key = models.CharField(max_length=50)
+    data_value = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        app_label = 'messenger_users'
+
+
+class Referral(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user_shared = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='shared_ref')
+    user_opened = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='opened_ref', null=True)
+    ref_type = models.CharField(choices=[("link", "link"), ("ref","ref")], default="link", max_length=15)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        app_label = 'messenger_users'
+
+    def __str__(self):
+        return "User '{}' referred '{}'".format(self.user_share, self.user_open)
