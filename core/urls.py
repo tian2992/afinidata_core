@@ -30,5 +30,6 @@ urlpatterns = [
     path('attributes/', include('attributes.urls', namespace='attributes')),
     path('forms/', include('forms.urls', namespace='forms')),
     path('levels/', include('levels.urls', namespace='levels')),
-    path('sections/', include('sections.urls', namespace='sections'))
+    path('sections/', include('sections.urls', namespace='sections')),
+    path('utilities/', include('utilities.urls', namespace='utilities'))
 ]

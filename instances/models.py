@@ -13,6 +13,7 @@ class Instance(models.Model):
     attributes = models.ManyToManyField(Attribute, through='AttributeValue')
     sections = models.ManyToManyField(Section, through='InstanceSection')
     areas = models.ManyToManyField(Area, through='InstanceSection')
+    milestones = models.ManyToManyField(Milestone, through='Response')
     user_id = models.IntegerField(default=1, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -59,7 +60,7 @@ class Response(models.Model):
     instance = models.ForeignKey(Instance, on_delete=models.CASCADE)
     milestone = models.ForeignKey(Milestone, on_delete=models.CASCADE)
     response = models.CharField(max_length=255)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField()
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
