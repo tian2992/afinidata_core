@@ -24,13 +24,12 @@ class HomeView(LoginRequiredMixin, ListView):
     template_name = 'instances/index.html'
     model = Instance
     context_object_name = 'instances'
-    paginate_by = 10
+    paginate_by = 1000
     login_url = '/admin/login/'
     redirect_field_name = 'redirect_to'
 
 
 class InstanceView(LoginRequiredMixin, DetailView):
-    template_name = 'instances/instance.html'
     model = Instance
     pk_url_kwarg = 'id'
     login_url = '/admin/login/'

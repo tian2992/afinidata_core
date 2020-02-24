@@ -147,7 +147,7 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 DOMAIN_URL = os.getenv('CORE_DOMAIN_URL')
 CONTENT_MANAGER_URL = os.getenv('CONTENT_MANAGER_URL')
 CORE_ADMIN_ADMIN = os.getenv('CORE_ADMIN_ADMIN')
@@ -162,5 +162,14 @@ REST_FRAMEWORK = {
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
-print('domain url')
-print(DOMAIN_URL)
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "assets")
+]
+
+MESSAGE_TAGS = {
+    10: 'alert-info',
+    20: 'alert-info',
+    25: 'alert-success',
+    30: 'alert-warning',
+    40: 'alert-danger'
+}
