@@ -1,0 +1,3 @@
+[submodule "assets/startbootstrap-sb-admin-2"]
+	path = assets/startbootstrap-sb-admin-2
+	url = https://github.com/BlackrockDigital/startbootstrap-sb-admin-2
