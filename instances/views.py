@@ -23,29 +23,27 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 class HomeView(LoginRequiredMixin, ListView):
     template_name = 'instances/index.html'
     model = Instance
-    context_object_name = 'instances'
-    paginate_by = 1000
-    login_url = '/admin/login/'
-    redirect_field_name = 'redirect_to'
+    paginate_by = 100
+    login_url = reverse_lazy('pages:login')
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(HomeView, self).get_context_data()
+        print(self.paginator_class)
+        return context
 
 
 class InstanceView(LoginRequiredMixin, DetailView):
     model = Instance
     pk_url_kwarg = 'id'
-    login_url = '/admin/login/'
-    redirect_field_name = 'redirect_to'
+    login_url = reverse_lazy('pages:login')
 
 
 class NewInstanceView(LoginRequiredMixin, CreateView):
     model = Instance
     template_name = 'instances/new.html'
     fields = ('entity', 'bot', 'name', 'user_id')
-    login_url = '/admin/login/'
-    redirect_field_name = 'redirect_to'
-
-    def form_valid(self, form):
-        form.save()
-        return redirect('instances:index')
+    login_url = reverse_lazy('pages:login')
+    success_url = reverse_lazy('instances:index')
 
 
 class EditInstanceView(LoginRequiredMixin, UpdateView):
@@ -54,8 +52,7 @@ class EditInstanceView(LoginRequiredMixin, UpdateView):
     template_name = 'instances/edit.html'
     pk_url_kwarg = 'id'
     context_object_name = 'instance'
-    login_url = '/admin/login/'
-    redirect_field_name = 'redirect_to'
+    login_url = reverse_lazy('pages:login')
 
     def form_valid(self, form):
         entity = form.save()
@@ -67,14 +64,12 @@ class DeleteInstanceView(LoginRequiredMixin, DeleteView):
     template_name = 'instances/delete.html'
     pk_url_kwarg = 'id'
     success_url = reverse_lazy('instances:index')
-    login_url = '/admin/login/'
-    redirect_field_name = 'redirect_to'
+    login_url = reverse_lazy('pages:login')
 
 
 class AddAttributeToInstance(LoginRequiredMixin, View):
 
-    login_url = '/admin/login/'
-    redirect_field_name = 'redirect_to'
+    login_url = reverse_lazy('pages:login')
 
     def get(self, request, *args, **kwargs):
         instance = get_object_or_404(Instance, id=kwargs['id'])

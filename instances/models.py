@@ -4,6 +4,7 @@ from bots.models import Bot
 from areas.models import Area, Section
 from milestones.models import Milestone
 from attributes.models import Attribute
+from messenger_users.models import User
 
 
 class Instance(models.Model):
@@ -20,6 +21,9 @@ class Instance(models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_messenger_user(self):
+        return User.objects.get(id=self.user_id)
 
 
 class InstanceSection(models.Model):

@@ -48,7 +48,8 @@ INSTALLED_APPS = [
     'attributes.apps.AttributesConfig',
     'forms.apps.FormsConfig',
     'levels.apps.LevelsConfig',
-    'sections.apps.SectionsConfig'
+    'sections.apps.SectionsConfig',
+    'widget_tweaks'
 ]
 
 MIDDLEWARE = [
@@ -160,7 +161,7 @@ REST_FRAMEWORK = {
 }
 
 LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/login/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "assets")

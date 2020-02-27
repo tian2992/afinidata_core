@@ -14,6 +14,18 @@ class User(models.Model):
     def __str__(self):
         return self.username
 
+    def get_first_name(self):
+        try:
+            return self.userdata_set.get(data_key='channel_first_name').data_value
+        except:
+            return None
+
+    def get_last_name(self):
+        try:
+            return self.userdata_set.get(data_key='channel_last_name').data_value
+        except:
+            return None
+
 
 class UserData(models.Model):
     user = models.ForeignKey('User', on_delete=models.CASCADE)

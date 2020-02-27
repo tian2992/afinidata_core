@@ -22,9 +22,8 @@ class LoginView(AuthLoginView):
 
 
 class LogoutView(AuthLogoutView):
-    next_page = reverse_lazy('pages:home')
+    next_page = reverse_lazy('pages:index')
 
     def dispatch(self, request, *args, **kwargs):
         messages.success(self.request, "Logout successfully")
         return super(LogoutView, self).dispatch(request, *args, **kwargs)
-
