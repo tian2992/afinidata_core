@@ -25,6 +25,27 @@ class Instance(models.Model):
     def get_messenger_user(self):
         return User.objects.get(id=self.user_id)
 
+    def get_assigned_milestones(self):
+        milestones = self.get_completed_milestones().union(self.get_failed_milestones()).order_by('-code')
+        for milestone in milestones:
+            milestone.assign = self.response_set.filter(milestone=milestone).order_by('-created_at').first()
+        return milestones
+
+    def get_completed_milestones(self):
+        milestones = Milestone.objects.filter(
+            id__in=[m.milestone.pk for m in self.response_set.filter(response='done')])
+        for milestone in milestones:
+            milestone.assign = self.response_set.filter(milestone=milestone).filter(response='done') \
+                .order_by('-created_at').first()
+        return milestones
+
+    def get_failed_milestones(self):
+        milestones = Milestone.objects.filter(id__in=[m.milestone.pk for m in self.response_set.exclude(response='done')])
+        for milestone in milestones:
+            milestone.assign = self.response_set.filter(milestone=milestone).exclude(response='done')\
+                .order_by('-created_at').first()
+        return milestones
+
 
 class InstanceSection(models.Model):
     instance = models.ForeignKey(Instance, on_delete=models.CASCADE)

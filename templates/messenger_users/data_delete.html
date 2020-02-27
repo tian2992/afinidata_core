@@ -7,7 +7,7 @@
 {% block content %}
     <h1>Delete | User Data </h1>
 
-    <form action="." method="post">
+    <form action="../../messenger_users/templates/messenger_users" method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <p>Are you sure to delete {{ data.data_key }} with value: {{ data.data_value }}?</p>
