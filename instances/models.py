@@ -101,3 +101,11 @@ class AttributeValue(models.Model):
 
     def __str__(self):
         return "%s__%s__%s__%s" % (self.pk, self.instance.name, self.attribute.name, self.value)
+
+
+class PostInteraction(models.Model):
+    instance = models.ForeignKey(Instance, on_delete=models.CASCADE)
+    post_id = models.IntegerField()
+    type = models.CharField(max_length=255, default='open')
+    value = models.IntegerField(default=0)
+    created_at = models.DateTimeField()

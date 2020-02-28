@@ -49,7 +49,9 @@ INSTALLED_APPS = [
     'forms.apps.FormsConfig',
     'levels.apps.LevelsConfig',
     'sections.apps.SectionsConfig',
-    'widget_tweaks'
+    'widget_tweaks',
+    'posts.apps.PostsConfig',
+    'utilities.apps.UtilitiesConfig'
 ]
 
 MIDDLEWARE = [
@@ -103,10 +105,18 @@ DATABASES = {
         'PASSWORD': os.getenv('CORE_MESSENGER_USERS_DATABASE_PASSWORD'),
         'HOST': os.getenv('CORE_MESSENGER_USERS_DATABASE_HOST'),
         'PORT': os.getenv('CORE_MESSENGER_USERS_DATABASE_PORT'),
+    },
+    'posts_db': {
+        'ENGINE': os.getenv('CORE_POSTS_DATABASE_ENGINE'),
+        'NAME': os.getenv('CORE_POSTS_DATABASE_NAME'),
+        'USER': os.getenv('CORE_POSTS_DATABASE_USER'),
+        'PASSWORD': os.getenv('CORE_POSTS_DATABASE_PASSWORD'),
+        'HOST': os.getenv('CORE_POSTS_DATABASE_HOST'),
+        'PORT': os.getenv('CORE_POSTS_DATABASE_PORT'),
     }
 }
 
-DATABASE_ROUTERS = ['messenger_users.routers.MessengerUsersRouter']
+DATABASE_ROUTERS = ['messenger_users.routers.MessengerUsersRouter', 'posts.routers.PostsRouter']
 
 print('database name')
 print(os.getenv('CORE_DATABASE_NAME'))

@@ -4,6 +4,7 @@ from instances.models import Instance, Response
 from django.views.generic import TemplateView
 from milestones.models import Milestone
 from entities.models import Entity
+from posts.models import Interaction
 from bots.models import Bot
 
 
@@ -90,4 +91,14 @@ class GetChildrenMilestonesView(LoginRequiredMixin, TemplateView):
                         print(instance.pk, response.milestone, response.response)
                         context['created'] = context['created'] + 1
 
+        return context
+
+
+class GetChildrenInteractionsView(LoginRequiredMixin, TemplateView):
+    template_name = 'utilities/get_children_interactions.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(GetChildrenInteractionsView, self).get_context_data()
+        for instance in Instance.objects.all():
+            print(instance.user_id)
         return context
