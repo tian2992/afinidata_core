@@ -109,3 +109,6 @@ class PostInteraction(models.Model):
     type = models.CharField(max_length=255, default='open')
     value = models.IntegerField(default=0)
     created_at = models.DateTimeField()
+
+    def __str__(self):
+        return "%s %s %s" % (self.instance, self.post_id, self.type)

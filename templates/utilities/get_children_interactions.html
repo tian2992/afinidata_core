@@ -13,7 +13,13 @@
               <h6 class="m-0 font-weight-bold text-primary">Info</h6>
             </div>
             <div class="card-body">
-
+                <ul>
+                    <li><strong>DM ID: </strong><span>{{ data_migration.pk }}</span></li>
+                    <li><strong>DM date: </strong><span>{{ data_migration.date }}</span></li>
+                    <li><strong>DM last data ID: </strong><span>{{ data_migration.last_data_id }}</span></li>
+                    <li><strong>DM last register ID: </strong><span>{{ data_migration.last_register_id }}</span></li>
+                    <li><strong>DM quantity: </strong><span>{{ data_migration.qty_register }}</span></li>
+                </ul>
             </div>
         </div>
     </div>

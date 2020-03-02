@@ -1,10 +1,11 @@
+from utilities.models import InteractionInstanceMigrations
 from messenger_users.models import Child, User, ChildData
 from django.contrib.auth.mixins import LoginRequiredMixin
 from instances.models import Instance, Response
 from django.views.generic import TemplateView
 from milestones.models import Milestone
-from entities.models import Entity
 from posts.models import Interaction
+from entities.models import Entity
 from bots.models import Bot
 
 
@@ -99,6 +100,30 @@ class GetChildrenInteractionsView(LoginRequiredMixin, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(GetChildrenInteractionsView, self).get_context_data()
+        last_data_id = 0
+        last_register_id = 0
+        qty_register = 0
+        migrations = InteractionInstanceMigrations.objects.all()
+        query_data = None
+
+        if migrations.count() > 0:
+            query_data = Interaction.objects.filter(id__gt=migrations.last().last_register_id)
+        else:
+            query_data = Interaction.objects.all()
+
         for instance in Instance.objects.all():
-            print(instance.user_id)
+            interactions = query_data.filter(user_id=instance.user_id, type__in=['dispatched', 'session'],
+                                             post_id__isnull=False)
+            for interaction in interactions:
+                post_interaction = instance.postinteraction_set\
+                    .create(post_id=interaction.post_id, type=interaction.type, value=interaction.value,
+                            created_at=interaction.created_at)
+                last_data_id = post_interaction.pk
+                last_register_id = interaction.pk
+                qty_register = qty_register + 1
+                print(post_interaction)
+
+        context['data_migration'] = InteractionInstanceMigrations.objects\
+            .create(last_register_id=last_register_id, last_data_id=last_data_id, qty_register=qty_register)
+
         return context
