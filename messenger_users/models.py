@@ -1,5 +1,7 @@
-import uuid
+from instances import models as InstanceModels
+from bots.models import Bot
 from django.db import models
+import uuid
 
 
 class User(models.Model):
@@ -23,6 +25,18 @@ class User(models.Model):
     def get_last_name(self):
         try:
             return self.userdata_set.get(data_key='channel_last_name').data_value
+        except:
+            return None
+
+    def get_instances(self):
+        return InstanceModels.Instance.objects.filter(user_id=self.pk)
+
+    def get_bot(self):
+        return Bot.objects.get(id=self.bot_id)
+
+    def get_email(self):
+        try:
+            return self.userdata_set.get(data_key='email').data_value
         except:
             return None
 

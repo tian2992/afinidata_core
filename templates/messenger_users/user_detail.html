@@ -1,11 +1,26 @@
-{% extends 'messenger_users/base.html' %}
+{% extends 'base/private.html' %}
 
-{% block title %}
-    Afinidata | User
-{% endblock %}
+{% block title %}{{ user.get_first_name }} {{ user.get_last_name }}{% endblock %}
 
 {% block content %}
-    <h1>Afinidata | User</h1>
+    <div class="container-fluid">
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">{{ object.get_first_name }} {{ object.get_last_name }}</h1>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary">Info</h6>
+            </div>
+            <div class="card-body">
+                <strong class="text-gray-900">Bot: </strong><a href="{% url 'bots:bot' id=object.bot_id %}">{{ object.get_bot.name }}</a><br>
+                <strong class="text-gray-900">Channel ID: </strong>{{ object.last_channel_id }}<br>
+                <strong class="text-gray-900">Email: </strong>{{ object.get_email }}<br>
+            </div>
+        </div>
+    </div>
 
     <ul>
         <li><strong>Username: </strong><span>{{ user.username }}</span>
@@ -27,7 +42,7 @@
     <h2>Instances: </h2>
 
     <ul>
-        {% for instance in instances %}
+        {% for instance in user.get_instances %}
             <li>{{ instance.name }} |
                 <a href="{% url 'instances:instance' id=instance.pk %}">View</a>
             </li>
