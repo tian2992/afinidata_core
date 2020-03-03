@@ -5,6 +5,7 @@ from areas.models import Area, Section
 from milestones.models import Milestone
 from attributes.models import Attribute
 from messenger_users.models import User
+from posts.models import Post
 
 
 class Instance(models.Model):
@@ -45,6 +46,23 @@ class Instance(models.Model):
             milestone.assign = self.response_set.filter(milestone=milestone).exclude(response='done')\
                 .order_by('-created_at').first()
         return milestones
+
+    def get_activities(self):
+        posts = Post.objects.filter(id__in=set([x.post_id for x in self.postinteraction_set.all()])).only('id', 'name')
+        for post in posts:
+            post.assign = self.postinteraction_set.filter(post_id=post.id, type='dispatched').last()
+            sessions = self.postinteraction_set.filter(post_id=post.id, type='session')
+            if sessions.count() > 0:
+                post.completed = sessions.last()
+            else:
+                post.completed = None
+        return posts
+
+    def get_completed_activities(self):
+        posts = Post.objects\
+            .filter(id__in=set([x.post_id for x in self.postinteraction_set.filter(type='session')])).only('id')
+        print(posts.count)
+        return posts
 
 
 class InstanceSection(models.Model):

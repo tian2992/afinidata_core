@@ -32,6 +32,98 @@
 
     <div class="container-fluid">
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Activities</h1>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-3 mb-4">
+
+              <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Sent Activities (Monthly)</div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800">{{ object.get_activities.count }}</div>
+                    </div>
+                    <div class="col-auto">
+                      <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <div class="col-3 mb-4">
+                <div class="card border-left-warning shadow h-100 py-2">
+                    <div class="card-body">
+                      <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                          <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Completed Activities</div>
+                          <div class="h5 mb-0 font-weight-bold text-gray-800">{{ object.get_completed_activities.count }}</div>
+                        </div>
+                        <div class="col-auto">
+                          <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+            </div>
+
+            <div class="col-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                      <h6 class="m-0 font-weight-bold text-primary">Assigned Activities</h6>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Status</th>
+                                    <th>Date Assigned</th>
+                                    <th>Date Completed</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for i in instance.get_activities %}
+                                    <tr>
+                                        <td>{{ i.pk }}</td>
+                                        <td>{{ i.name }}</td>
+                                        <td>
+                                            {% if i.completed %}
+                                                 <i class="fas fa-check-circle fa-2x text-success"></i>
+                                            {% else %}
+                                                <i class="fas fa-times-circle fa-2x text-danger"></i>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ i.assign.created_at }}</td>
+                                        <td>
+                                            {% if i.completed %}
+                                                 {{ i.completed.created_at }}
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="btn-group">
+                                                <a href="#" class="btn btn-primary"><i class="fa fa-eye"></i></a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">Milestones</h1>
         </div>
     </div>
@@ -42,7 +134,7 @@
             <div class="col-12">
                 <div class="card shadow mb-4">
                     <div class="card-header py-3">
-                      <h6 class="m-0 font-weight-bold text-primary">Assigned milestones</h6>
+                      <h6 class="m-0 font-weight-bold text-primary">Last Assigned milestones</h6>
                     </div>
                     <div class="card-body">
                         <table class="table table-bordered">
