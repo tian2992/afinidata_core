@@ -1,4 +1,5 @@
 from django.contrib.auth.views import LoginView as AuthLoginView, LogoutView as AuthLogoutView
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
 from django.urls import reverse_lazy
 from django.contrib import messages
@@ -27,3 +28,8 @@ class LogoutView(AuthLogoutView):
     def dispatch(self, request, *args, **kwargs):
         messages.success(self.request, "Logout successfully")
         return super(LogoutView, self).dispatch(request, *args, **kwargs)
+
+
+class DashboardView(LoginRequiredMixin, TemplateView):
+    template_name = 'pages/dashboard.html'
+
