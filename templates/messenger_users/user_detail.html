@@ -15,38 +15,64 @@
               <h6 class="m-0 font-weight-bold text-primary">Info</h6>
             </div>
             <div class="card-body">
+                <strong class="text-gray-900">ID: </strong>{{ object.pk }}<br>
+                <strong class="text-gray-900">Username: </strong>{{ object.username }}<br>
                 <strong class="text-gray-900">Bot: </strong><a href="{% url 'bots:bot' id=object.bot_id %}">{{ object.get_bot.name }}</a><br>
                 <strong class="text-gray-900">Channel ID: </strong>{{ object.last_channel_id }}<br>
                 <strong class="text-gray-900">Email: </strong>{{ object.get_email }}<br>
+                <strong class="text-gray-900">Country: </strong>{{ object.get_country }}<br>
+                <strong class="text-gray-900">Created At: </strong>{{ object.created_at }}<br>
             </div>
         </div>
     </div>
 
-    <ul>
-        <li><strong>Username: </strong><span>{{ user.username }}</span>
-            {% if user.channel_id %}
-                <span>(Migrated)</span>
-            {% endif %}
-        </li>
-        <li><strong>Last Channel ID: </strong><span>{{ user.last_channel_id }}</span></li>
-        <li><strong>Channel ID: </strong><span>{{ user.channel_id }}</span></li>
-        {% for attribute in user.userdata_set.all %}
-            <li>
-                <strong>{{ attribute.data_key }}:</strong> <span>{{ attribute.data_value }}</span> |
-                <a href="{% url 'messenger_users:attribute_edit' id=user.pk attribute_id=attribute.pk %}">Edit</a> -
-                <a href="{% url 'messenger_users:attribute_delete' id=user.pk attribute_id=attribute.pk %}">Delete</a>
-            </li>
-        {% endfor %}
-    </ul>
+    <div class="container-fluid">
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Instances</h1>
+        </div>
+    </div>
 
-    <h2>Instances: </h2>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                      <h6 class="m-0 font-weight-bold text-primary">Assigned Activities</h6>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Entity</th>
+                                    <th>Created At</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for instance in user.get_instances %}
+                                    <tr>
+                                        <td>{{ instance.pk }}</td>
+                                        <td>{{ instance.name }}</td>
+                                        <td><a href="{% url 'entities:entity' id=instance.entity_id %}">{{ instance.entity.name }}</a></td>
+                                        <td>{{ instance.created_at }}</td>
+                                        <td>
+                                            <div class="btn-group">
 
-    <ul>
-        {% for instance in user.get_instances %}
-            <li>{{ instance.name }} |
-                <a href="{% url 'instances:instance' id=instance.pk %}">View</a>
-            </li>
-        {% endfor %}
-    </ul>
+                                        <a href="{% url 'instances:instance' id=instance.pk %}" class="btn btn-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 {% endblock %}

@@ -35,9 +35,27 @@ class User(models.Model):
         return Bot.objects.get(id=self.bot_id)
 
     def get_email(self):
-        try:
-            return self.userdata_set.get(data_key='email').data_value
-        except:
+        keys = self.userdata_set.filter(data_key='email')
+        print(keys)
+        if keys.count() > 0:
+            return keys.last().data_value
+        else:
+            return None
+
+    def get_country(self):
+        keys = self.userdata_set.filter(data_key='Pais')
+        print(keys)
+        if keys.count() > 0:
+            return keys.last().data_value
+        else:
+            return None
+
+    def get_property(self, data_key):
+        keys = self.userdata_set.filter(data_key=data_key)
+        print(keys)
+        if keys.count() > 0:
+            return keys.last().data_value
+        else:
             return None
 
 
