@@ -1,4 +1,4 @@
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.views.generic import ListView, DetailView, CreateView
 from django.urls import reverse_lazy
 from django.contrib import messages
