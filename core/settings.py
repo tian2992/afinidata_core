@@ -51,7 +51,8 @@ INSTALLED_APPS = [
     'sections.apps.SectionsConfig',
     'widget_tweaks',
     'posts.apps.PostsConfig',
-    'utilities.apps.UtilitiesConfig'
+    'utilities.apps.UtilitiesConfig',
+    'groups.apps.GroupsConfig'
 ]
 
 MIDDLEWARE = [
@@ -118,9 +119,6 @@ DATABASES = {
 
 DATABASE_ROUTERS = ['messenger_users.routers.MessengerUsersRouter', 'posts.routers.PostsRouter']
 
-print('database name')
-print(os.getenv('CORE_DATABASE_NAME'))
-print(os.getenv('CORE_MESSENGER_USERS_DATABASE_NAME'))
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
 
