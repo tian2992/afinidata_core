@@ -26,3 +26,7 @@ class AddMessengerUserView(PermissionRequiredMixin, CreateView):
                          (self.object.get_messenger_user().get_first_name(),
                           self.object.get_messenger_user().get_last_name()))
         return reverse_lazy('groups:group', kwargs={'group_id': self.object.group.pk})
+
+
+class ExchangeCodeView(CreateView):
+    pass
