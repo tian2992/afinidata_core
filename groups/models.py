@@ -31,12 +31,16 @@ class Code(models.Model):
     def __str__(self):
         return self.code
 
+    def exchange(self):
+        self.exchanges = self.exchanges + 1
+        self.save()
+
 
 class AssignationMessengerUser(models.Model):
     messenger_user_id = models.IntegerField()
     group = models.ForeignKey(Group, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    code_id = models.ForeignKey(Code, null=True, on_delete=models.SET_NULL)
+    code = models.ForeignKey(Code, null=True, on_delete=models.SET_NULL)
 
     def get_messenger_user(self):
         return MessengerUser.objects.get(id=self.messenger_user_id)

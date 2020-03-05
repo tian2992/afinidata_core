@@ -93,6 +93,7 @@
                     <thead>
                         <tr>
                           <th>Messenger User</th>
+                          <th>Childs</th>
                           <th>Created At</th>
                           <th>Assigned Date</th>
                           <th>Code</th>
@@ -102,6 +103,7 @@
                     <tfoot>
                         <tr>
                           <th>Messenger User</th>
+                          <th>Childs</th>
                           <th>Created At</th>
                           <th>Assigned Date</th>
                           <th>Code</th>
@@ -114,6 +116,12 @@
                                 <td>
                                     (<a href="{% url 'messenger_users:user' id=assignation.messenger_user_id %}">{{ assignation.messenger_user_id }}</a>)
                                     {{ assignation.get_messenger_user.get_first_name }} {{ assignation.get_messenger_user.get_last_name }}
+                                </td>
+                                <td>
+                                    {% for instance in assignation.get_messenger_user.get_instances %}
+                                        (<a href="{% url 'instances:instance' id=instance.pk %}">{{ instance.pk }}</a>) <span>{{ instance.name }}</span>
+                                        <br>
+                                    {% endfor %}
                                 </td>
                                 <td>{{ assignation.get_messenger_user.created_at }}</td>
                                 <td>{{ assignation.created_at }}</td>

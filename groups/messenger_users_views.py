@@ -1,9 +1,12 @@
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.views.generic import DetailView, CreateView
+from django.views.generic import DetailView, CreateView, TemplateView
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 from django.shortcuts import get_object_or_404
+from django.http import JsonResponse, Http404
 from django.urls import reverse_lazy
 from django.contrib import messages
-from groups import models
+from groups import models, forms
 
 
 class AddMessengerUserView(PermissionRequiredMixin, CreateView):
@@ -28,5 +31,27 @@ class AddMessengerUserView(PermissionRequiredMixin, CreateView):
         return reverse_lazy('groups:group', kwargs={'group_id': self.object.group.pk})
 
 
-class ExchangeCodeView(CreateView):
-    pass
+@method_decorator(csrf_exempt, name='dispatch')
+class ExchangeCodeView(TemplateView):
+    template_name = 'groups/code_form.html'
+
+    def get(self, request, *args, **kwargs):
+        raise Http404
+
+    def post(self, request, *args, **kwargs):
+        form = forms.ExchangeCodeForm(request.POST)
+
+        if form.is_valid():
+            user = form.cleaned_data['messenger_user_id']
+            code = form.cleaned_data['code']
+            exchange = models.AssignationMessengerUser.objects.create(messenger_user_id=user.pk,
+                                                                      group=code.group,
+                                                                      code=code)
+            code.exchange()
+            return JsonResponse(dict(set_attributes=dict(group_code_error='false',
+                                                         group_code_error_message=''),
+                                     messages=[]))
+        else:
+            return JsonResponse(dict(set_attributes=dict(group_code_error='true',
+                                                         group_code_error_message='User ID or code wrong'),
+                                     messages=[]))

@@ -1,5 +1,7 @@
+from django.views.generic import ListView, View, DetailView, UpdateView, DeleteView, CreateView
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import ListView, View, DetailView, UpdateView, DeleteView
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 from messenger_users.models import User, UserData
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -352,3 +354,29 @@ class SetUserChannelID(View):
             ),
             messages=[]
         ))
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class CreateMessengerUser(CreateView):
+    model = User
+    fields = ('channel_id', 'bot_id')
+
+    def form_valid(self, form):
+        user = form.save()
+        return JsonResponse(dict(set_attributes=dict(user_id=user.pk), messages=[]))
+
+    def form_invalid(self, form):
+        return JsonResponse(dict(set_attributes={}, messages=[]))
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class CreateMessengerUserData(CreateView):
+    model = UserData
+    fields = ('user', 'data_key', 'data_value')
+
+    def form_valid(self, form):
+        form.save()
+        return JsonResponse(dict(set_attributes=dict(data_error='false', data_error_message=""), messages=[]))
+
+    def form_invalid(self, form):
+        return JsonResponse(dict(set_attributes=dict(data_error='true', data_error_message="check params"), messages=[]))
