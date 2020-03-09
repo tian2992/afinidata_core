@@ -362,6 +362,9 @@ class CreateMessengerUser(CreateView):
     fields = ('channel_id', 'bot_id')
 
     def form_valid(self, form):
+        form.instance.last_channel_id = form.data['channel_id']
+        form.instance.username = form.data['channel_id']
+        form.instance.backup_key = form.data['channel_id']
         user = form.save()
         return JsonResponse(dict(set_attributes=dict(user_id=user.pk), messages=[]))
 

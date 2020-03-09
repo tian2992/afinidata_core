@@ -1,0 +1,85 @@
+{% extends 'base/private.html' %}
+
+{% block title %}Afinidata | {{ entity.name }}{% endblock %}
+
+{% block content %}
+
+    <div class="container-fluid">
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">{{ entity.name }}</h1>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary">Entity List</h6>
+            </div>
+            <div class="card-body">
+                <strong class="text-gray-800">Description: </strong>{{ entity.description }}<br>
+                <strong class="text-gray-800">Actions: </strong>
+                <div class="btn-group">
+                    <a href="{% url 'entities:edit' id=entity.pk %}" class="btn btn-success">
+                        <i class="fas fa-pen"></i>
+                    </a>
+                    <a href="{% url 'entities:delete' id=entity.pk %}" class="btn btn-danger">
+                        <i class="fas fa-times"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Attributes</h1>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary">List</h6>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                          <th>Name</th>
+                          <th>Type</th>
+                          <th>Created At</th>
+                          <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                          <th>Name</th>
+                          <th>Type</th>
+                          <th>Created At</th>
+                          <th>Actions</th>
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        {% for attribute in entity.attributes.all %}
+                            <tr>
+                                <td>{{attribute.name}}</td>
+                                <td>{{attribute.type}}</td>
+                                <td>{{attribute.created_at}}</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="{% url 'attributes:attribute' id=entity.pk %}" class="btn btn-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+              </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

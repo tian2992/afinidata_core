@@ -5,7 +5,7 @@ import uuid
 
 
 class User(models.Model):
-    last_channel_id = models.CharField(max_length=50, unique=True, null=True)
+    last_channel_id = models.CharField(max_length=50, unique=True)
     channel_id = models.CharField(max_length=50, null=True, unique=True)
     backup_key = models.CharField(max_length=50, unique=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)

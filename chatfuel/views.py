@@ -1,8 +1,10 @@
 from django.shortcuts import render, get_object_or_404
+from django.utils.decorators import method_decorator
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from areas.forms import MilestonesByAreaForm
+from chatfuel import forms
 from milestones.forms import ResponseMilestoneForm
 from instances.forms import ScoreModelForm, InstanceModelForm
 from instances.models import Instance, InstanceSection
@@ -10,7 +12,42 @@ from areas.models import Area, Section
 from chatfuel.forms import SetSectionToInstance
 from milestones.models import Milestone
 from django.views.generic import View
+from messenger_users.models import User as MessengerUser
 import requests
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class GetInstancesByUserView(View):
+
+    def get(self, request, *args, **kwargs):
+        return JsonResponse(dict(status='error', error='Invalid Method'))
+
+    def post(self, request):
+        form = forms.GetInstancesForm(request.POST)
+
+        if not form.is_valid():
+            return JsonResponse(dict(status='error', error='Invalid params.'))
+
+        print(form.data['user'])
+
+        label = "Choice your instance: "
+        try:
+            if form.data['label']:
+                label = form.data['label']
+        except:
+            pass
+        user = MessengerUser.objects.get(id=int(form.data['user']))
+        replies = [dict(title=item.name, set_attributes=dict(instance=item.pk, instance_name=item.name)) for item in user.get_instances()]
+
+        return JsonResponse(dict(
+            set_attributes=dict(),
+            messages=[
+                dict(
+                    text=label,
+                    quick_replies=replies
+                )
+            ]
+        ))
 
 
 @csrf_exempt
