@@ -1,18 +1,18 @@
+from instances.forms import ScoreModelForm, InstanceModelForm
+from messenger_users.models import User as MessengerUser
+from instances.models import Instance, InstanceSection
 from django.shortcuts import render, get_object_or_404
 from django.utils.decorators import method_decorator
-from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-from areas.forms import MilestonesByAreaForm
-from chatfuel import forms
 from milestones.forms import ResponseMilestoneForm
-from instances.forms import ScoreModelForm, InstanceModelForm
-from instances.models import Instance, InstanceSection
-from areas.models import Area, Section
 from chatfuel.forms import SetSectionToInstance
 from milestones.models import Milestone
+from areas.models import Area, Section
 from django.views.generic import View
-from messenger_users.models import User as MessengerUser
+from django.http import JsonResponse
+from django.conf import settings
+from groups.models import Code
+from chatfuel import forms
 import requests
 
 
@@ -48,54 +48,6 @@ class GetInstancesByUserView(View):
                 )
             ]
         ))
-
-
-@csrf_exempt
-def get_user_instances(request, id):
-
-    if request.method == 'POST':
-        return JsonResponse(dict(status='error', error='Invalid method'))
-
-    response_label = 'Choice Instance: '
-
-    try:
-        response_label = request.GET['label']
-        print(response_label)
-    except Exception as e:
-        pass
-
-    request_uri = settings.DOMAIN_URL + '/instances/by_bot_user/' + str(id)
-    r = requests.get(request_uri)
-    response = r.json()
-    if response['status'] != 'error':
-        attributes = dict()
-        instances = response['data']['instances']
-        replies = []
-
-        if len(instances) > 0:
-            for index, instance in enumerate(instances):
-                attributes['instance__' + str(index + 1)] = instance['id']
-                attributes['instance__' + str(index + 1) + '__name'] = instance['name']
-
-                replies.append(dict(
-                    title=instance['name'],
-                    set_attributes=dict(
-                        instance=instance['id'],
-                        instance_name=instance['name']
-                    )
-                ))
-
-        return JsonResponse(dict(
-            set_attributes=attributes,
-            messages=[
-                dict(
-                    text=response_label,
-                    quick_replies=replies
-                )
-            ]
-        ))
-    else:
-        return JsonResponse(dict(status='error', error=str(response['error'])))
 
 
 @csrf_exempt
@@ -307,3 +259,22 @@ class GetActivity(View):
         r = requests.get(request_uri)
         response = r.json()
         return JsonResponse(response)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class VerifyCodeView(View):
+
+    def get(self, request, *args, **kwargs):
+        return JsonResponse(dict(request_status='error', request_error='Invalid Method'))
+
+    def post(self, request):
+        form = forms.VerifyCodeForm(request.POST)
+        if not form.is_valid():
+            return JsonResponse(dict(set_attributes=dict(request_status='error', request_error='Invalid params'),
+                                     messages=[]))
+
+        code = Code.objects.get(code=form.data['code'])
+
+        return JsonResponse(dict(set_attributes=dict(request_status='done', request_code=code.code,
+                                                     request_code_group=code.group.name),
+                                 messages=[]))
