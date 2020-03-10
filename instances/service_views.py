@@ -1,9 +1,13 @@
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-from instances.forms import InstanceModelForm
 from instances.models import Instance, InstanceSection, Response
-from milestones.models import Milestone
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse, Http404
+from instances.forms import InstanceModelForm
+from django.views.generic import CreateView
 from datetime import datetime, timedelta
+from milestones.models import Milestone
+from instances import models
 
 
 @csrf_exempt
@@ -78,3 +82,36 @@ def milestone_by_area(request, id):
         )
     )
     return JsonResponse(response)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class CreateInstanceAttributeView(CreateView):
+    model = models.AttributeValue
+    fields = ('attribute', 'value')
+
+    def get_form(self, form_class=None):
+        form = super(CreateInstanceAttributeView, self).get_form(form_class=None)
+        instance = get_object_or_404(Instance, id=self.kwargs['instance_id'])
+        form.fields['attribute'].queryset = instance.entity.attributes.all()
+        form.fields['attribute'].to_field_name = 'name'
+        return form
+
+    def form_valid(self, form):
+        form.instance.instance = get_object_or_404(Instance, id=self.kwargs['instance_id'])
+        instance_value = form.save()
+        if instance_value:
+            return JsonResponse(dict(set_attributes=dict(status='done', result_id=instance_value.pk,
+                                                         result_message='id: %s attribute %s value: %s' % (
+                                                             instance_value.pk, instance_value.attribute.name,
+                                                             instance_value.value
+                                                         ))))
+
+        return JsonResponse(dict(set_attributes=dict(status='error', error_name='instance_attribute_error',
+                                                     error='Invalid params'), messages=[]))
+
+    def form_invalid(self, form):
+        return JsonResponse(dict(set_attributes=dict(status='error', error_name='instance_attribute_error',
+                                                     error='Invalid params'), messages=[]))
+
+    def get(self, request, *args, **kwargs):
+        raise Http404

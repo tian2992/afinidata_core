@@ -16,25 +16,24 @@ class AttributesView(LoginRequiredMixin, ListView):
 
 
 class NewAttributeView(LoginRequiredMixin, CreateView):
-    template_name = 'attributes/new.html'
     model = Attribute
     fields = ('name', 'type')
-    login_url = '/admin/login/'
-    redirect_field_name = 'redirect_to'
+    login_url = reverse_lazy('pages:login')
 
-    def form_valid(self, form):
-        attribute = form.save()
-        messages.success(self.request, 'Attribute with name: %s has been created.' % attribute.name)
-        return redirect('attributes:index')
+    def get_success_url(self):
+        messages.success(self.request, 'Attribute with name: %s has been created.' % self.object.name)
+        return reverse_lazy('attributes:attribute', kwargs={'id': self.object.pk})
+
+    def get_context_data(self, **kwargs):
+        c = super(NewAttributeView, self).get_context_data()
+        c['action'] = 'Create'
+        return c
 
 
 class AttributeView(LoginRequiredMixin, DetailView):
-    template_name = 'attributes/attribute.html'
-    login_url = '/admin/login/'
-    redirect_field_name = 'redirect_to'
+    login_url = reverse_lazy('pages:login')
     pk_url_kwarg = 'id'
     model = Attribute
-    context_object_name = 'attribute'
 
 
 class EditAttributeView(LoginRequiredMixin, UpdateView):

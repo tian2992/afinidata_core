@@ -4,7 +4,7 @@ import sys
 from dotenv import load_dotenv
 
 if __name__ == '__main__':
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings.base')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings')
     env_path = './.env'
     load_dotenv(dotenv_path=env_path)
 

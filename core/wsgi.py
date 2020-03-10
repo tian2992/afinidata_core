@@ -16,6 +16,6 @@ project_folder = os.path.expanduser('~/core')
 print(project_folder)
 load_dotenv(os.path.join(project_folder, '.env'))
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings.production')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.production')
 
 application = get_wsgi_application()
