@@ -61,8 +61,14 @@ class Instance(models.Model):
     def get_completed_activities(self):
         posts = Post.objects\
             .filter(id__in=set([x.post_id for x in self.postinteraction_set.filter(type='session')])).only('id')
-        print(posts.count)
         return posts
+
+    def get_attributes(self):
+        attributes_ids = set(item.pk for item in self.attributes.all())
+        attributes = Attribute.objects.filter(id__in=attributes_ids)
+        for attribute in attributes:
+            attribute.assign = self.attributevalue_set.filter(attribute=attribute).last()
+        return attributes
 
 
 class InstanceSection(models.Model):

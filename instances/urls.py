@@ -18,5 +18,7 @@ path('', views.HomeView.as_view(), name='index'),
     path('score/', views.score, name='score'),
     path('by_bot_user/<int:id>/', views.instances_by_user, name='by_bot_user'),
     path('<int:id>/milestone/', service_views.milestone_by_area, name='milestone_by_area'),
-    path('api/new/', service_views.create_user, name="api_user")
+    path('api/new/', service_views.create_user, name="api_user"),
+    path('<int:instance_id>/create_attribute/', service_views.CreateInstanceAttributeView.as_view(),
+         name='create_attribute')
 ]
