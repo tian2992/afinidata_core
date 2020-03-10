@@ -11,7 +11,7 @@ import os
 from dotenv import load_dotenv
 
 from django.core.wsgi import get_wsgi_application
-load_dotenv(dotenv_path='../.env')
+load_dotenv(dotenv_path='~/afinidata_core/.env')
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.production')
 
