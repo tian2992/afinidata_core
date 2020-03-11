@@ -6,9 +6,9 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from milestones.forms import ResponseMilestoneForm
 from django.views.generic import View, CreateView
+from messenger_users.models import User, UserData
 from chatfuel.forms import SetSectionToInstance
 from milestones.models import Milestone
-from messenger_users.models import User
 from areas.models import Area, Section
 from django.http import JsonResponse
 from django.conf import settings
@@ -35,6 +35,20 @@ class CreateMessengerUserView(CreateView):
             return JsonResponse(dict(set_attributes=dict(user_id=user_set.last().pk,
                                                          request_status='done'), messages=[]))
 
+        return JsonResponse(dict(set_attributes=dict(request_status='error',
+                                                     request_message='Invalid params'), messages=[]))
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class CreateMessengerUserDataView(CreateView):
+    model = UserData
+    fields = ('user', 'data_key', 'data_value')
+
+    def form_valid(self, form):
+        form.save()
+        return JsonResponse(dict(set_attributes=dict(request_status='done'), messages=[]))
+
+    def form_invalid(self, form):
         return JsonResponse(dict(set_attributes=dict(request_status='error',
                                                      request_message='Invalid params'), messages=[]))
 
