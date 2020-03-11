@@ -8,6 +8,12 @@ https://docs.djangoproject.com/en/2.1/howto/deployment/wsgi/
 """
 
 import os
+from dotenv import load_dotenv
+from core.settings import BASE_DIR
+
+load_dotenv(dotenv_path='../.env')
+
+print(BASE_DIR)
 
 from django.core.wsgi import get_wsgi_application
 
