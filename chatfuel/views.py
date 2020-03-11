@@ -146,7 +146,7 @@ class ExchangeCodeView(TemplateView):
         if form.is_valid():
             user = form.cleaned_data['messenger_user_id']
             code = form.cleaned_data['code']
-            changes = AssignationMessengerUser.objects.filter(messenger_user_id=user.pk, code=code)
+            changes = AssignationMessengerUser.objects.filter(messenger_user_id=user.pk)
             print(changes)
             if not changes.count() > 0:
                 exchange = AssignationMessengerUser.objects.create(messenger_user_id=user.pk, group=code.group,
