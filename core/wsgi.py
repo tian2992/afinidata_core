@@ -12,8 +12,6 @@ from dotenv import load_dotenv
 from core.settings import BASE_DIR
 
 env_path = os.path.join(BASE_DIR, '.env')
-print(BASE_DIR)
-print(env_path)
 load_dotenv(dotenv_path=env_path)
 
 
