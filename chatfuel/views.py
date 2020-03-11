@@ -1,6 +1,5 @@
 from django.views.generic import View, CreateView, TemplateView
 from instances.forms import ScoreModelForm, InstanceModelForm
-from groups import forms as group_forms
 from groups.models import Code, AssignationMessengerUser
 from messenger_users.models import User as MessengerUser
 from instances.models import Instance, InstanceSection
@@ -9,6 +8,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from messenger_users.models import User, UserData
 from django.http import JsonResponse, Http404
+from groups import forms as group_forms
 from chatfuel import forms
 
 
@@ -146,9 +146,16 @@ class ExchangeCodeView(TemplateView):
         if form.is_valid():
             user = form.cleaned_data['messenger_user_id']
             code = form.cleaned_data['code']
-            exchange = AssignationMessengerUser.objects.create(messenger_user_id=user.pk, group=code.group, code=code)
-            code.exchange()
-            return JsonResponse(dict(set_attributes=dict(request_status='done'), messages=[]))
+            changes = AssignationMessengerUser.objects.filter(messenger_user_id=user.pk, code=code)
+            print(changes)
+            if not changes.count() > 0:
+                exchange = AssignationMessengerUser.objects.create(messenger_user_id=user.pk, group=code.group,
+                                                                   code=code)
+                code.exchange()
+                return JsonResponse(dict(set_attributes=dict(request_status='done'), messages=[]))
+            else:
+                return JsonResponse(dict(set_attributes=dict(request_status='error',
+                                                             request_error='User be in group'), messages=[]))
         else:
             return JsonResponse(dict(set_attributes=dict(request_status='error',
                                                          request_error='User ID or code wrong'), messages=[]))
