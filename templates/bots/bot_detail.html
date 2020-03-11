@@ -1,0 +1,36 @@
+{% extends 'base/private.html' %}
+
+{% block title %}Bot: {{ object.name }}{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Bot: {{ object.name }}</h1>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary">Info</h6>
+            </div>
+            <div class="card-body">
+                <strong class="text-gray-900">ID: </strong>{{ object.pk }}<br>
+                <strong class="text-gray-900">Description: </strong><span>{{ object.description }}</span><br>
+                <strong class="text-gray-900">Created At: </strong>{{ object.created_at }}<br>
+                <strong class="text-gray-900">Last Updated At: </strong>{{ object.updated_at }}<br>
+                <strong class="text-gray-900">Actions: </strong>
+                <div class="btn-group">
+                    <a href="{% url 'bots:edit' id=object.pk %}" class="btn btn-success"><i class="fas fa-pen"></i></a>
+                    <a href="{% url 'bots:delete' id=object.pk %}" class="btn btn-danger"><i class="fas fa-times"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="content">
+
+    </div>
+{% endblock %}

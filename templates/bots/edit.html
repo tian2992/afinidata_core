@@ -1,16 +1,16 @@
-{% extends 'bots/base.html' %}
+{% extends 'base/private.html' %}
 
-{% block title %}Afinidata | New Bot{% endblock %}
+{% block title %}Afinidata | Edit Bot{% endblock %}
 
 {% block content %}
-    <h1>New Bot</h1>
+    <h1>Edit Bot {{ object.name }}</h1>
 
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
 
         <div class="form-submit">
-            <input type="submit" value="Create Bot">
+            <input type="submit" value="Edit Bot">
         </div>
     </form>
 

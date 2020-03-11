@@ -120,8 +120,6 @@ DATABASES = {
     }
 }
 
-print(DATABASES)
-
 DATABASE_ROUTERS = ['messenger_users.routers.MessengerUsersRouter', 'posts.routers.PostsRouter']
 
 # Password validation
@@ -173,7 +171,7 @@ REST_FRAMEWORK = {
     ]
 }
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/login/'
 
 STATICFILES_DIRS = [
