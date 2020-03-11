@@ -6,15 +6,7 @@ app_name = 'chatfuel'
 urlpatterns = [
     path('create_messenger_user/', views.CreateMessengerUserView.as_view(), name='create_messenger_user'),
     path('create_messenger_user_data/', views.CreateMessengerUserDataView.as_view(), name='create_messenger_user_data'),
-    path('get_milestone_by_area/<int:id>/', views.milestone_by_area, name='milestone_by_area'),
-    path('response_milestone_for_instance/<int:milestone_id>/', views.response_milestone_for_instance,
-         name='response_milestone_by_area'),
-    path('set_area_value_to_instance/', views.set_area_value_to_instance, name='area_to_instance'),
     path('instance/new/', views.create_instance, name='new_instance'),
-    path('set_sections_to_instance/', views.set_sections_by_value, name='set_sections_by_value'),
-    path('evaluator/', views.Evaluator.as_view(), name='evaluator'),
-    path('up_instance/<int:id>/', views.up_instance, name='up_instance'),
-    path('get_activity/<int:id>/', views.GetActivity.as_view(), name='get_activity'),
     path('get_instances/', views.GetInstancesByUserView.as_view(), name='get_instances'),
     path('verify_code/', views.VerifyCodeView.as_view(), name='verify_code')
 ]
