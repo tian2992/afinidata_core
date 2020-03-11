@@ -4,8 +4,9 @@ from chatfuel import views
 app_name = 'chatfuel'
 
 urlpatterns = [
+    path('create_messenger_user/', views.CreateMessengerUserView.as_view(), name='create_messenger_user'),
     path('get_milestone_by_area/<int:id>/', views.milestone_by_area, name='milestone_by_area'),
-    path('response_milestone_for_instance/<int:milestone_id>/', views.response_milestone_for_instance,\
+    path('response_milestone_for_instance/<int:milestone_id>/', views.response_milestone_for_instance,
          name='response_milestone_by_area'),
     path('set_area_value_to_instance/', views.set_area_value_to_instance, name='area_to_instance'),
     path('instance/new/', views.create_instance, name='new_instance'),
