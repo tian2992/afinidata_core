@@ -41,14 +41,14 @@ class InstanceView(LoginRequiredMixin, DetailView):
 class NewInstanceView(LoginRequiredMixin, CreateView):
     model = Instance
     template_name = 'instances/new.html'
-    fields = ('entity', 'bot', 'name', 'user_id')
+    fields = ('entity', 'name', 'user_id')
     login_url = reverse_lazy('pages:login')
     success_url = reverse_lazy('instances:index')
 
 
 class EditInstanceView(LoginRequiredMixin, UpdateView):
     model = Instance
-    fields = ('entity', 'bot', 'name', 'user_id')
+    fields = ('entity', 'name', 'user_id')
     template_name = 'instances/edit.html'
     pk_url_kwarg = 'id'
     context_object_name = 'instance'

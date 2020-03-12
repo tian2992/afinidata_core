@@ -22,7 +22,6 @@
                           <th>ID</th>
                           <th>Name</th>
                           <th>Entity</th>
-                          <th>Messenger User</th>
                           <th>Actions</th>
                         </tr>
                     </thead>
@@ -31,7 +30,6 @@
                           <th>ID</th>
                           <th>Name</th>
                           <th>Entity</th>
-                          <th>Messenger User</th>
                           <th>Actions</th>
                         </tr>
                     </tfoot>
@@ -41,11 +39,6 @@
                               <td>{{ instance.pk }}</td>
                               <td>{{ instance.name.capitalize }}</td>
                               <td><a href="{% url 'entities:entity' id=instance.entity.pk %}">{{ instance.entity.name.title }}</a></td>
-                              <td>
-                                  (<a href="{% url 'messenger_users:user' id=instance.get_messenger_user.pk %}">#{{ instance.get_messenger_user.pk }}</a>)
-                                  {{ instance.get_messenger_user.get_first_name }}
-                                  {{ instance.get_messenger_user.get_last_name }}
-                              </td>
                               <td>
                                   <div class="btn-group">
                                       <a href="{% url 'instances:instance' id=instance.pk %}" class="btn btn-primary"><i class="fa fa-eye"></i></a>

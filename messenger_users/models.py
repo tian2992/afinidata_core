@@ -31,7 +31,7 @@ class User(models.Model):
             return None
 
     def get_instances(self):
-        return InstanceModels.Instance.objects.filter(user_id=self.pk)
+        return None
 
     def get_bot(self):
         return Bot.objects.get(id=self.bot_id)

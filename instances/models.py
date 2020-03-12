@@ -10,7 +10,6 @@ from posts.models import Post
 
 class Instance(models.Model):
     entity = models.ForeignKey(Entity, on_delete=models.CASCADE)
-    bot = models.ForeignKey(bot_models.Bot, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     attributes = models.ManyToManyField(Attribute, through='AttributeValue')
     sections = models.ManyToManyField(Section, through='InstanceSection')
@@ -24,7 +23,7 @@ class Instance(models.Model):
         return self.name
 
     def get_messenger_user(self):
-        return user_models.User.objects.get(id=self.user_id)
+        return None
 
     def get_assigned_milestones(self):
         milestones = self.get_completed_milestones().union(self.get_failed_milestones()).order_by('-code')
@@ -69,6 +68,12 @@ class Instance(models.Model):
         for attribute in attributes:
             attribute.assign = self.attributevalue_set.filter(attribute=attribute).last()
         return attributes
+
+
+class InstanceAssociationUser(models.Model):
+    instance = models.ForeignKey(Instance, on_delete=models.CASCADE)
+    user_id = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
 
 class InstanceSection(models.Model):
