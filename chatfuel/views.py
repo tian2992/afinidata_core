@@ -1,8 +1,7 @@
 from django.views.generic import View, CreateView, TemplateView
-from instances.forms import ScoreModelForm, InstanceModelForm
 from groups.models import Code, AssignationMessengerUser
 from messenger_users.models import User as MessengerUser
-from instances.models import Instance, InstanceSection
+from instances.models import InstanceAssociationUser
 from django.shortcuts import render, get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -93,19 +92,28 @@ class GetInstancesByUserView(View):
 def create_instance(request):
 
     if request.method == 'GET':
-        return JsonResponse(dict(status='error', error="Invalid method."))
+        return JsonResponse(dict(
+            set_attributes=dict(request_status='error', request_error='Invalid Method'),
+            messages=[]
+        ))
 
-    form = InstanceModelForm(request.POST)
+    form = forms.InstanceModelForm(request.POST)
 
     if not form.is_valid():
-        return JsonResponse(dict(status="error", error="Invalid params."))
+        return JsonResponse(dict(
+            set_attributes=dict(request_status='error', request_error='Invalid Params'),
+            messages=[]
+        ))
 
     new_instance = form.save()
+    assignation = InstanceAssociationUser.objects.create(user_id=form.data['user_id'], instance=new_instance)
 
     return JsonResponse(dict(
         set_attributes=dict(
+            request_status='done',
             instance=new_instance.pk,
-            instance_name=new_instance.name
+            instance_name=new_instance.name,
+            instance_assignation_id=assignation.pk
         ),
         messages=[]
     ))

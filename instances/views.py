@@ -5,7 +5,7 @@ from django.views.generic import TemplateView, CreateView, UpdateView, DeleteVie
 from django.views import View
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from instances.forms import ScoreModelForm, ScoreTrackingModelForm, InstanceAttributeValueForm, \
+from instances.forms import ScoreTrackingModelForm, InstanceAttributeValueForm, \
      InstanceSectionForm
 from django.contrib import messages
 from areas.models import Area, Section
@@ -92,31 +92,6 @@ class AddAttributeToInstance(LoginRequiredMixin, View):
             return redirect('instances:instance', id=kwargs['id'])
 
         return JsonResponse(dict(hello='world'))
-
-
-@csrf_exempt
-def score(request):
-
-    if request.method == 'POST':
-        form = ScoreModelForm(request.POST)
-        tracking_form = ScoreTrackingModelForm(request.POST)
-
-        if form.is_valid():
-            instance_score, response = Score.objects.get_or_create(
-                area_id=request.POST['area'],
-                instance_id=request.POST['instance']
-            )
-            instance_score.value = request.POST['value']
-            instance_score.save()
-
-        if tracking_form.is_valid():
-            tracking_form.save()
-
-            return JsonResponse(dict(status='done', data=dict(message='score has been created or updated')))
-        else:
-            return JsonResponse(dict(status='error', error='invalid params'))
-    else:
-        return JsonResponse(dict(status='error', error='invalid method'))
 
 
 @csrf_exempt
