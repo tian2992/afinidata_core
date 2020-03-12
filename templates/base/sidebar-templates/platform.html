@@ -44,3 +44,18 @@
       </div>
     </div>
 </li>
+
+<li class="nav-item">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseAreas" aria-expanded="true" aria-controls="collapseTwo">
+      <i class="fas fa-chart-area"></i>
+      <span>Areas</span>
+    </a>
+    <div id="collapseAreas" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+      <div class="bg-white py-2 collapse-inner rounded">
+        <h6 class="collapse-header">Attributes:</h6>
+        <a class="collapse-item" href="{% url 'areas:index' %}">All Areas</a>
+          <a class="collapse-item" href="{% url 'areas:new' %}">Add New</a>
+      </div>
+    </div>
+</li>
+
