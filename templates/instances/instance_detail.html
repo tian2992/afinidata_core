@@ -16,6 +16,12 @@
             </div>
             <div class="card-body">
                 <strong class="text-gray-900">Entity: </strong><a href="{% url 'entities:entity' id=object.entity_id %}">{{ object.entity.name.title }}</a><br>
+                <strong class="text-gray-900">Users: </strong>
+                    <ul>
+                        {% for user in instance.get_users %}
+                          <li>(<a href="{% url 'messenger_users:user' id=user.pk %}">{{ user.pk }}</a>) <span>{{ user.get_first_name }} {{ user.get_last_name }}</span></li>
+                      {% endfor %}
+                    </ul>
                 <strong class="text-gray-900">Created At: </strong><span>{{ object.created_at }}</span><br>
                 <strong class="text-gray-900">Last updated At: </strong><span>{{ object.updated_at }}</span><br>
                 <strong class="text-gray-900">Actions: </strong>

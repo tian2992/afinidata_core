@@ -15,15 +15,15 @@ class Instance(models.Model):
     sections = models.ManyToManyField(Section, through='InstanceSection')
     areas = models.ManyToManyField(Area, through='InstanceSection')
     milestones = models.ManyToManyField(Milestone, through='Response')
-    user_id = models.IntegerField(default=1, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
 
-    def get_messenger_user(self):
-        return None
+    def get_users(self):
+        return user_models.User.objects\
+            .filter(id__in=set(assoc.user_id for assoc in self.instanceassociationuser_set.all()))
 
     def get_assigned_milestones(self):
         milestones = self.get_completed_milestones().union(self.get_failed_milestones()).order_by('-code')

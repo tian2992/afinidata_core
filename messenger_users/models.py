@@ -31,7 +31,7 @@ class User(models.Model):
             return None
 
     def get_instances(self):
-        return None
+        return InstanceModels.Instance.objects.filter(instanceassociationuser__user_id=self.pk)
 
     def get_bot(self):
         return Bot.objects.get(id=self.bot_id)
