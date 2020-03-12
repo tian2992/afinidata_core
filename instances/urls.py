@@ -15,9 +15,7 @@ path('', views.HomeView.as_view(), name='index'),
     path('<int:id>/evaluator/', views.Evaluator.as_view(), name="evaluator"),
     path('<int:id>/up/', views.up_instance, name='up'),
     path('<int:id>/get_activity/', views.GetActivityView.as_view(), name='get_activity'),
-    path('by_bot_user/<int:id>/', views.instances_by_user, name='by_bot_user'),
     path('<int:id>/milestone/', service_views.milestone_by_area, name='milestone_by_area'),
-    path('api/new/', service_views.create_user, name="api_user"),
     path('<int:instance_id>/create_attribute/', service_views.CreateInstanceAttributeView.as_view(),
          name='create_attribute')
 ]

@@ -1,5 +1,5 @@
+from instances.models import Instance, AttributeValue
 from messenger_users.models import User
-from instances.models import Instance
 from groups.models import Code
 from django import forms
 
@@ -24,3 +24,11 @@ class InstanceModelForm(forms.ModelForm):
     class Meta:
         model = Instance
         fields = ('entity', 'name')
+
+
+class InstanceAttributeValue(forms.ModelForm):
+    instance = forms.ModelChoiceField(queryset=Instance.objects.all())
+
+    class Meta:
+        model = AttributeValue
+        fields = ('attribute', 'value')

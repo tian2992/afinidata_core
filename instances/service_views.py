@@ -11,29 +11,6 @@ from instances import models
 
 
 @csrf_exempt
-def create_user(request):
-
-    if request.method == 'GET':
-        return JsonResponse(dict(status='error', error='Invalid method.'))
-
-    form = InstanceModelForm(request.POST)
-
-    if not form.is_valid():
-        return JsonResponse(dict(status='error', error='Invalid params.'))
-
-    instance = form.save()
-    return JsonResponse(dict(
-        status='done',
-        data=dict(
-            instance=dict(
-                id=instance.pk,
-                name=instance.name
-            )
-        )
-    ))
-
-
-@csrf_exempt
 def milestone_by_area(request, id):
 
     if request.method == 'POST':

@@ -1,8 +1,7 @@
+from instances.models import InstanceAssociationUser, Instance, AttributeValue
 from django.views.generic import View, CreateView, TemplateView
 from groups.models import Code, AssignationMessengerUser
 from messenger_users.models import User as MessengerUser
-from instances.models import InstanceAssociationUser
-from django.shortcuts import render, get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from messenger_users.models import User, UserData
@@ -30,7 +29,8 @@ class CreateMessengerUserView(CreateView):
         user_set = User.objects.filter(channel_id=form.data['channel_id'])
         if user_set.count() > 0:
             return JsonResponse(dict(set_attributes=dict(user_id=user_set.last().pk,
-                                                         request_status='done'), messages=[]))
+                                                         request_status='error', request_message='User exists'),
+                                     messages=[]))
 
         return JsonResponse(dict(set_attributes=dict(request_status='error',
                                                      request_message='Invalid params'), messages=[]))
@@ -167,3 +167,36 @@ class ExchangeCodeView(TemplateView):
         else:
             return JsonResponse(dict(set_attributes=dict(request_status='error',
                                                          request_error='User ID or code wrong'), messages=[]))
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class CreateInstanceAttributeView(CreateView):
+    model = AttributeValue
+    template_name = 'chatfuel/form.html'
+    fields = ('instance', 'value', 'attribute')
+
+    def get_form(self, form_class=None):
+        form = super(CreateInstanceAttributeView, self).get_form(form_class=None)
+        form.fields['attribute'].to_field_name = 'name'
+        return form
+
+    def form_valid(self, form):
+
+        if not form.instance.instance.entity.attributes.filter(id=form.instance.attribute.pk):
+            return JsonResponse(dict(set_attributes=dict(request_status='error',
+                                                         error_message='Attribute not in instance'), messages=[]))
+
+        attribute_value = form.save()
+
+        return JsonResponse(dict(set_attributes=dict(
+            set_attributes=dict(request_status='done', request_attribute_value_id=attribute_value.pk),
+            messages=[]
+        )))
+
+    def form_invalid(self, form):
+        return JsonResponse(dict(set_attributes=dict(request_status='error',
+                                                     status_error='Invalid params'), messages=[]))
+
+    def get(self, request, *args):
+        raise Http404
+

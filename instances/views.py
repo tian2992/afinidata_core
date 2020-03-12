@@ -94,26 +94,6 @@ class AddAttributeToInstance(LoginRequiredMixin, View):
         return JsonResponse(dict(hello='world'))
 
 
-@csrf_exempt
-def instances_by_user(request, id):
-
-    if request.method == 'POST':
-        return JsonResponse(dict(status='error', error='invalid method'))
-
-    instances = Instance.objects.filter(bot_user_id=id)
-
-    if instances.count() <= 0:
-        return JsonResponse(dict(status='founded', data=dict(
-            instances=[]
-        )))
-    else:
-        instances_to_return = []
-        for instance in instances:
-            instances_to_return.append(dict(id=instance.pk, name=instance.name))
-
-        return JsonResponse(dict(status='founded', data=dict(instances=instances_to_return)))
-
-
 class InstanceSectionView(LoginRequiredMixin, View):
     login_url = '/admin/login/'
     redirect_field_name = 'redirect_to'
