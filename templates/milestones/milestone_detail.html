@@ -1,0 +1,34 @@
+{% extends 'base/private.html' %}
+
+{% block title %}
+    {{ milestone.name }}
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Milestone: {{ object.code }}</h1>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary">Info</h6>
+            </div>
+            <div class="card-body">
+                <strong class="text-gray-900">ID: </strong>{{ object.pk }}<br>
+                <strong class="text-gray-900">Name: </strong>{{ object.name }}<br>
+                <strong class="text-gray-900">Description: </strong>{{ object.description }}<br>
+                <strong class="text-gray-900">Area: </strong>{{ object.area.name }}<br>
+                <strong class="text-gray-900">Second Code: </strong>{{ object.second_code }}<br>
+                <strong class="text-gray-900">Value: </strong>{{ object.value }}<br>
+                <strong class="text-gray-900">Secondary Value: </strong>{{ object.secondary_value }}<br>
+                <strong class="text-gray-900">Created At: </strong>{{ object.created_at }}<br>
+                <strong class="text-gray-900">Last Updated At: </strong>{{ object.updated_at }}<br>
+                <strong class="text-gray-900">Actions: </strong>
+                <div class="btn-group"><a href="{% url 'milestones:edit' id=object.pk %}" class="btn btn-success"><i class="fas fa-pen"></i></a></div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
