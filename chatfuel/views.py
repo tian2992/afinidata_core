@@ -6,6 +6,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from messenger_users.models import User, UserData
 from django.http import JsonResponse, Http404
+from attributes.models import Attribute
 from groups import forms as group_forms
 from chatfuel import forms
 
@@ -117,6 +118,49 @@ def create_instance(request):
         ),
         messages=[]
     ))
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class GetInstanceAttributeView(TemplateView):
+    template_name = 'chatfuel/form.html'
+
+    def get_context_data(self, **kwargs):
+        c = super(GetInstanceAttributeView, self).get_context_data()
+        c['form'] = forms.GetInstanceAttributeValue(None)
+        return c
+
+    def post(self, request, *args, **kwargs):
+        form = forms.GetInstanceAttributeValue(self.request.POST)
+
+        if not form.is_valid():
+            return JsonResponse(dict(set_attributes=dict(request_status='error', request_error='Invalid params'),
+                                     messages=[]))
+
+        instance = Instance.objects.get(id=form.data['instance'])
+        attributes = instance.entity.attributes.filter(name=form.data['attribute'])
+
+        if not attributes.count() > 0:
+            return JsonResponse(dict(set_attributes=dict(
+                request_status='error',
+                request_error='Entity of instance has not attribute with name %s.' % form.data['attribute']),
+                                     messages=[]))
+
+        attribute = Attribute.objects.get(name=form.data['attribute'])
+        instance_attributes = AttributeValue.objects.filter(attribute=attribute, instance=instance)
+
+        if not instance_attributes.count() > 0:
+            return JsonResponse(dict(set_attributes=dict(
+                request_status='error',
+                request_error='Instance has not values with attribute: %s.' % form.data['attribute']),
+                messages=[]))
+
+        return JsonResponse(
+            dict(set_attributes={
+                'request_status': 'done',
+                form.data['attribute']: instance_attributes.last().value
+            },
+                 messages=[])
+        )
 
 
 ''' CODE VIEWS '''
