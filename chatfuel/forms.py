@@ -1,4 +1,5 @@
 from instances.models import Instance, AttributeValue
+from attributes.models import Attribute
 from messenger_users.models import User
 from groups.models import Code
 from django import forms
@@ -32,3 +33,8 @@ class InstanceAttributeValue(forms.ModelForm):
     class Meta:
         model = AttributeValue
         fields = ('attribute', 'value')
+
+
+class GetInstanceAttributeValue(forms.Form):
+    instance = forms.ModelChoiceField(queryset=Instance.objects.all())
+    attribute = forms.ModelChoiceField(queryset=Attribute.objects.all(), to_field_name='name')
