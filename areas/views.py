@@ -36,7 +36,6 @@ class EditAreaView(LoginRequiredMixin, UpdateView):
 
 
 class AreaView(LoginRequiredMixin, DetailView):
-    template_name = 'areas/area.html'
     model = Area
     pk_url_kwarg = 'id'
     context_object_name = 'area'
