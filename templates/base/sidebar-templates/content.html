@@ -1,0 +1,17 @@
+<hr class="sidebar-divider">
+
+<div class="sidebar-heading">Milestones</div>
+
+<li class="nav-item">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseMilestones" aria-expanded="true" aria-controls="collapseMilestones">
+      <i class="fas fa-trophy"></i>
+      <span>Milestones</span>
+    </a>
+    <div id="collapseMilestones" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+      <div class="bg-white py-2 collapse-inner rounded">
+        <h6 class="collapse-header">Milestones:</h6>
+        <a class="collapse-item" href="{% url 'milestones:index' %}">All Milestones</a>
+        <a class="collapse-item" href="{% url 'milestones:new' %}">Add New</a>
+      </div>
+    </div>
+</li>
