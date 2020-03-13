@@ -6,7 +6,7 @@ import uuid
 
 class User(models.Model):
     last_channel_id = models.CharField(max_length=50, unique=True)
-    channel_id = models.CharField(max_length=50, null=True, unique=True)
+    channel_id = models.CharField(max_length=50, unique=True)
     backup_key = models.CharField(max_length=50, unique=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -17,19 +17,21 @@ class User(models.Model):
         return self.username
 
     def get_first_name(self):
-        try:
-            return self.userdata_set.get(data_key='channel_first_name').data_value
-        except:
+        names = self.userdata_set.filter(data_key='channel_first_name')
+        if names.count() > 0:
+            return names.last().data_value
+        else:
             return None
 
     def get_last_name(self):
-        try:
-            return self.userdata_set.get(data_key='channel_last_name').data_value
-        except:
+        names = self.userdata_set.filter(data_key='channel_last_name')
+        if names.count() > 0:
+            return names.last().data_value
+        else:
             return None
 
     def get_instances(self):
-        return InstanceModels.Instance.objects.filter(user_id=self.pk)
+        return InstanceModels.Instance.objects.filter(instanceassociationuser__user_id=self.pk)
 
     def get_bot(self):
         return Bot.objects.get(id=self.bot_id)

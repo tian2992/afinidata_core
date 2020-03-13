@@ -3,6 +3,20 @@
 <div class="sidebar-heading">Platform</div>
 
 <li class="nav-item">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseBots" aria-expanded="true" aria-controls="collapseTwo">
+      <i class="fas fa-robot"></i>
+      <span>Bots</span>
+    </a>
+    <div id="collapseBots" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+      <div class="bg-white py-2 collapse-inner rounded">
+        <h6 class="collapse-header">Bots:</h6>
+        <a class="collapse-item" href="{% url 'bots:index' %}">All Bots</a>
+          <a class="collapse-item" href="{% url 'bots:new' %}">Add New</a>
+      </div>
+    </div>
+</li>
+
+<li class="nav-item">
     <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseEntities" aria-expanded="true" aria-controls="collapseTwo">
       <i class="fas fa-male"></i>
       <i class="fas fa-female"></i>

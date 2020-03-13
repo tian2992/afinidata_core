@@ -354,32 +354,3 @@ class SetUserChannelID(View):
             ),
             messages=[]
         ))
-
-
-@method_decorator(csrf_exempt, name='dispatch')
-class CreateMessengerUser(CreateView):
-    model = User
-    fields = ('channel_id', 'bot_id')
-
-    def form_valid(self, form):
-        form.instance.last_channel_id = form.data['channel_id']
-        form.instance.username = form.data['channel_id']
-        form.instance.backup_key = form.data['channel_id']
-        user = form.save()
-        return JsonResponse(dict(set_attributes=dict(user_id=user.pk), messages=[]))
-
-    def form_invalid(self, form):
-        return JsonResponse(dict(set_attributes={}, messages=[]))
-
-
-@method_decorator(csrf_exempt, name='dispatch')
-class CreateMessengerUserData(CreateView):
-    model = UserData
-    fields = ('user', 'data_key', 'data_value')
-
-    def form_valid(self, form):
-        form.save()
-        return JsonResponse(dict(set_attributes=dict(data_error='false', data_error_message=""), messages=[]))
-
-    def form_invalid(self, form):
-        return JsonResponse(dict(set_attributes=dict(data_error='true', data_error_message="check params"), messages=[]))

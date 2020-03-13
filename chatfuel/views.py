@@ -1,34 +1,71 @@
-from instances.forms import ScoreModelForm, InstanceModelForm
+from instances.models import InstanceAssociationUser, Instance, AttributeValue
+from django.views.generic import View, CreateView, TemplateView
+from groups.models import Code, AssignationMessengerUser
 from messenger_users.models import User as MessengerUser
-from instances.models import Instance, InstanceSection
-from django.shortcuts import render, get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from milestones.forms import ResponseMilestoneForm
-from chatfuel.forms import SetSectionToInstance
-from milestones.models import Milestone
-from areas.models import Area, Section
-from django.views.generic import View
-from django.http import JsonResponse
-from django.conf import settings
-from groups.models import Code
+from messenger_users.models import User, UserData
+from django.http import JsonResponse, Http404
+from groups import forms as group_forms
 from chatfuel import forms
-import requests
+
+
+''' MESSENGER USERS VIEWS '''
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class CreateMessengerUserView(CreateView):
+    model = User
+    fields = ('channel_id', 'bot_id')
+
+    def form_valid(self, form):
+        form.instance.last_channel_id = form.data['channel_id']
+        form.instance.username = form.data['channel_id']
+        form.instance.backup_key = form.data['channel_id']
+        user = form.save()
+        return JsonResponse(dict(set_attributes=dict(user_id=user.pk, request_status='done'), messages=[]))
+
+    def form_invalid(self, form):
+        user_set = User.objects.filter(channel_id=form.data['channel_id'])
+        if user_set.count() > 0:
+            return JsonResponse(dict(set_attributes=dict(user_id=user_set.last().pk,
+                                                         request_status='error', request_message='User exists'),
+                                     messages=[]))
+
+        return JsonResponse(dict(set_attributes=dict(request_status='error',
+                                                     request_message='Invalid params'), messages=[]))
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class CreateMessengerUserDataView(CreateView):
+    model = UserData
+    fields = ('user', 'data_key', 'data_value')
+
+    def form_valid(self, form):
+        form.save()
+        return JsonResponse(dict(set_attributes=dict(request_status='done'), messages=[]))
+
+    def form_invalid(self, form):
+        return JsonResponse(dict(set_attributes=dict(request_status='error',
+                                                     request_message='Invalid params'), messages=[]))
+
+
+''' INSTANCES VIEWS '''
 
 
 @method_decorator(csrf_exempt, name='dispatch')
 class GetInstancesByUserView(View):
 
     def get(self, request, *args, **kwargs):
-        return JsonResponse(dict(status='error', error='Invalid Method'))
+        return JsonResponse(dict(set_attributes=dict(request_status='error', request_error='Invalid Method'),
+                                 messages=[]))
 
     def post(self, request):
         form = forms.GetInstancesForm(request.POST)
 
         if not form.is_valid():
-            return JsonResponse(dict(status='error', error='Invalid params.'))
-
-        print(form.data['user'])
+            return JsonResponse(dict(set_attributes=dict(request_status='error', request_error='Invalid Method'),
+                                     messages=[]))
 
         label = "Choice your instance: "
         try:
@@ -37,10 +74,11 @@ class GetInstancesByUserView(View):
         except:
             pass
         user = MessengerUser.objects.get(id=int(form.data['user']))
-        replies = [dict(title=item.name, set_attributes=dict(instance=item.pk, instance_name=item.name)) for item in user.get_instances()]
+        replies = [dict(title=item.name, set_attributes=dict(instance=item.pk, instance_name=item.name)) for item in
+                   user.get_instances()]
 
         return JsonResponse(dict(
-            set_attributes=dict(),
+            set_attributes=dict(request_status='done'),
             messages=[
                 dict(
                     text=label,
@@ -54,211 +92,34 @@ class GetInstancesByUserView(View):
 def create_instance(request):
 
     if request.method == 'GET':
-        return JsonResponse(dict(status='error', error="Invalid method."))
+        return JsonResponse(dict(
+            set_attributes=dict(request_status='error', request_error='Invalid Method'),
+            messages=[]
+        ))
 
-    form = InstanceModelForm(request.POST)
+    form = forms.InstanceModelForm(request.POST)
 
     if not form.is_valid():
-        return JsonResponse(dict(status="error", error="Invalid params."))
+        return JsonResponse(dict(
+            set_attributes=dict(request_status='error', request_error='Invalid Params'),
+            messages=[]
+        ))
 
     new_instance = form.save()
+    assignation = InstanceAssociationUser.objects.create(user_id=form.data['user_id'], instance=new_instance)
 
     return JsonResponse(dict(
         set_attributes=dict(
+            request_status='done',
             instance=new_instance.pk,
-            instance_name=new_instance.name
+            instance_name=new_instance.name,
+            instance_assignation_id=assignation.pk
         ),
         messages=[]
     ))
 
 
-@csrf_exempt
-def milestone_by_area(request, id):
-
-    if request.method == 'POST':
-        return JsonResponse(dict(status='error', error='Invalid method'))
-
-    try:
-        instance = Instance.objects.get(id=id)
-        area = Area.objects.get(id=request.GET['area'])
-    except Exception as e:
-        return JsonResponse(dict(status='error', error='Invalid params. %s' % e))
-
-    request_uri = settings.DOMAIN_URL + '/instances/' + str(id) + '/milestone/'
-
-    if area and instance:
-        print(request.GET)
-        r = requests.get(request_uri, params=request.GET)
-        response = r.json()
-        print(response)
-        if(response['status']) == 'error':
-            return JsonResponse(dict(status='error', error=response['error']))
-
-        if not response['data']['milestone']:
-            return JsonResponse(dict(
-                set_attributes=dict(
-                    milestone_id=None,
-                    milestone_name=None,
-                    core_message=response['data']['message']
-                ),
-                messages=[]
-            ))
-
-        return JsonResponse(dict(
-            set_attributes=dict(
-                milestone=response['data']['milestone']['id'],
-                milestone_name=response['data']['milestone']['name']
-            ),
-            messages=[]
-        ))
-        
-    else:
-        return JsonResponse(dict(status='error', error='Invalid params'))
-
-
-@csrf_exempt
-def response_milestone_for_instance(request, milestone_id):
-
-    if request.method == 'GET':
-        return JsonResponse(dict(status='error', error='Invalid method'))
-    form = ResponseMilestoneForm(request.POST)
-
-    if form.is_valid():
-        request_uri = settings.DOMAIN_URL + '/milestones/' + str(milestone_id) + '/response/'
-        r = requests.post(request_uri, request.POST)
-        response = r.json()
-
-        if response['status'] == 'error':
-            return JsonResponse(dict(status='error', error=response['error']))
-
-        instance = Instance.objects.get(id=request.POST['instance'])
-        milestone = Milestone.objects.get(id=milestone_id)
-
-        set_attributes = dict(
-            core_message='Response for instance: %s to milestone: "%s" is %s' % (
-                instance.name,
-                milestone.name,
-                request.POST['response']
-            )
-        )
-        return JsonResponse(dict(set_attributes=set_attributes, messages=[]))
-    else:
-        return JsonResponse(dict(status='error', error='Invalid params'))
-
-
-@csrf_exempt
-def set_area_value_to_instance(request):
-
-    if request.method == 'GET':
-        return JsonResponse(dict(status='error', error='Invalid method'))
-
-    form = ScoreModelForm(request.POST)
-
-    if not form.is_valid():
-        return JsonResponse(dict(status='error', error='Invalid params'))
-
-    request_uri = settings.DOMAIN_URL + '/instances/score/'
-    r = requests.post(request_uri, request.POST)
-    response = r.json()
-
-    return JsonResponse(response)
-
-
-@csrf_exempt
-def set_sections_by_value(request):
-    if request.method == 'GET':
-        return JsonResponse(dict(status='error', error='Invalid method'))
-
-    form = SetSectionToInstance(request.POST)
-    if not form.is_valid():
-        return JsonResponse(dict(status='error', error='Invalid params.'))
-
-    instance = get_object_or_404(Instance, id=request.POST['instance'])
-    value = int(request.POST['value'])
-    areas = Area.objects.all()
-    areas_string = ''
-    sections_string = ''
-    for area in areas:
-        section = None
-        try:
-            section = Section.objects.get(area=area, level__min__lte=value, level__max__gte=value)
-            print(section)
-        except Exception as e:
-            print('error: ', str(e))
-            pass
-        if section:
-            areas_string = areas_string + "%s, " % area.name
-            sections_string = sections_string + "%s, " % section.name
-            new_instance_section = InstanceSection.objects.update_or_create(instance=instance, area=area, defaults=dict(
-                value_to_init=value,
-                instance=instance,
-                area=area,
-                section=section
-            ))
-            print(new_instance_section)
-
-    return JsonResponse(dict(set_attributes=dict(
-        core_message='Instance has been added to sections %s to areas %s' % (sections_string, areas_string)
-    ), messages=[]))
-
-
-class Evaluator(View):
-
-    def get(self, request):
-        try:
-            instance = Instance.objects.get(id=request.GET['instance'])
-            area = Area.objects.get(id=request.GET['area'])
-        except Exception as e:
-            return JsonResponse(dict(status='error', error='Invalid params: %s' % e))
-
-        request_uri = '%s/instances/%s/evaluator/?area=%s' % (settings.DOMAIN_URL, instance.pk, area.pk)
-        r = requests.get(request_uri)
-        response = r.json()
-        print(response)
-        return JsonResponse(dict(
-            set_attributes=dict(
-                instance_has_up=response['data']['up'],
-                instance_has_down=response['data']['down'],
-                core_message=response['data']['message']
-            ),
-            messages=[]
-        ))
-
-
-@csrf_exempt
-def up_instance(request, id):
-    if request.method == 'GET':
-        return JsonResponse(dict(set_attributes=dict(core_message='Invalid method')), messages=[])
-    try:
-        area = request.POST['area']
-    except Exception as e:
-        return JsonResponse(dict(set_attributes=dict(core_message='Invalid params: %s' % e), messages=[]))
-
-    request_uri = "%s/instances/%s/up/" % (settings.DOMAIN_URL, id)
-    r = requests.post(request_uri, request.POST)
-    response = r.json()
-    if response['status'] == 'error':
-        core_message = response['error']
-    else:
-        core_message = response['data']['message']
-    return JsonResponse(dict(set_attributes=dict(core_message=core_message, up=None, down=None),
-                             messages=[]))
-
-
-class GetActivity(View):
-
-    def get(self, request, **kwargs):
-        try:
-            instance = Instance.objects.get(id=kwargs['id'])
-            area = Area.objects.get(id=request.GET['area'])
-        except Exception as e:
-            return JsonResponse(dict(set_attributes=dict(core_message='Invalid params. %s' % e), messages=[]))
-
-        request_uri = '%s/instances/%s/get_activity/?area=%s' % (settings.DOMAIN_URL, instance.pk, area.pk)
-
-        r = requests.get(request_uri)
-        response = r.json()
-        return JsonResponse(response)
+''' CODE VIEWS '''
 
 
 @method_decorator(csrf_exempt, name='dispatch')
@@ -278,3 +139,64 @@ class VerifyCodeView(View):
         return JsonResponse(dict(set_attributes=dict(request_status='done', request_code=code.code,
                                                      request_code_group=code.group.name),
                                  messages=[]))
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class ExchangeCodeView(TemplateView):
+    template_name = 'groups/code_form.html'
+
+    def get(self, request, *args, **kwargs):
+        raise Http404
+
+    def post(self, request, *args, **kwargs):
+        form = group_forms.ExchangeCodeForm(request.POST)
+
+        if form.is_valid():
+            user = form.cleaned_data['messenger_user_id']
+            code = form.cleaned_data['code']
+            changes = AssignationMessengerUser.objects.filter(messenger_user_id=user.pk)
+            print(changes)
+            if not changes.count() > 0:
+                exchange = AssignationMessengerUser.objects.create(messenger_user_id=user.pk, group=code.group,
+                                                                   code=code)
+                code.exchange()
+                return JsonResponse(dict(set_attributes=dict(request_status='done'), messages=[]))
+            else:
+                return JsonResponse(dict(set_attributes=dict(request_status='error',
+                                                             request_error='User be in group'), messages=[]))
+        else:
+            return JsonResponse(dict(set_attributes=dict(request_status='error',
+                                                         request_error='User ID or code wrong'), messages=[]))
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class CreateInstanceAttributeView(CreateView):
+    model = AttributeValue
+    template_name = 'chatfuel/form.html'
+    fields = ('instance', 'value', 'attribute')
+
+    def get_form(self, form_class=None):
+        form = super(CreateInstanceAttributeView, self).get_form(form_class=None)
+        form.fields['attribute'].to_field_name = 'name'
+        return form
+
+    def form_valid(self, form):
+
+        if not form.instance.instance.entity.attributes.filter(id=form.instance.attribute.pk):
+            return JsonResponse(dict(set_attributes=dict(request_status='error',
+                                                         error_message='Attribute not in instance'), messages=[]))
+
+        attribute_value = form.save()
+
+        return JsonResponse(dict(set_attributes=dict(
+            set_attributes=dict(request_status='done', request_attribute_value_id=attribute_value.pk),
+            messages=[]
+        )))
+
+    def form_invalid(self, form):
+        return JsonResponse(dict(set_attributes=dict(request_status='error',
+                                                     status_error='Invalid params'), messages=[]))
+
+    def get(self, request, *args):
+        raise Http404
+

@@ -1,55 +1,52 @@
-from django.shortcuts import redirect
-from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, DeleteView, DetailView, ListView
-from bots.models import Bot
-from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse_lazy
+from django.contrib import messages
+from bots.models import Bot
 
 
 class HomeView(LoginRequiredMixin, ListView):
-    template_name = 'bots/index.html'
     model = Bot
     paginate_by = 10
     context_object_name = 'bots'
-    login_url = '/admin/login/'
-    redirect_field_name = 'redirect_to'
+    login_url = reverse_lazy('pages:login')
 
 
 class BotView(LoginRequiredMixin, DetailView):
-    template_name = 'bots/bot.html'
     model = Bot
     pk_url_kwarg = 'id'
-    context_object_name = 'bot'
-    login_url = '/admin/login/'
-    redirect_field_name = 'redirect_to'
+    login_url = reverse_lazy('pages:login')
 
 
 class CreateBotView(LoginRequiredMixin, CreateView):
     model = Bot
-    template_name = 'bots/new.html'
-    fields = ('name',)
-    login_url = '/admin/login/'
-    redirect_field_name = 'redirect_to'
+    fields = ('name', 'description')
+    login_url = reverse_lazy('pages:login')
 
-    def form_valid(self, form):
-        bot = form.save()
-        messages.success(self.request, 'Bot with name: %s has been created.' % bot.name)
-        return redirect('bots:index')
+    def get_context_data(self, **kwargs):
+        c = super(CreateBotView, self).get_context_data()
+        c['action'] = 'Create'
+        return c
+
+    def get_success_url(self):
+        messages.success(self.request, 'Bot with name: %s has been created.' % self.object.name)
+        return reverse_lazy('bots:bot', kwargs={'id': self.object.pk})
 
 
 class UpdateBotView(LoginRequiredMixin, UpdateView):
     model = Bot
-    template_name = 'bots/edit.html'
-    fields = ('name',)
+    fields = ('name', 'description')
     pk_url_kwarg = 'id'
-    context_object_name = 'bot'
-    login_url = '/admin/login/'
-    redirect_field_name = 'redirect_to'
+    login_url = reverse_lazy('pages:login')
 
-    def form_valid(self, form):
-        bot = form.save()
-        messages.success(self.request, 'Bot with name: %s has been updated.' % bot.name)
-        return redirect('bots:edit', bot.pk)
+    def get_context_data(self, **kwargs):
+        c = super(UpdateBotView, self).get_context_data()
+        c['action'] = 'Edit'
+        return c
+
+    def get_success_url(self):
+        messages.success(self.request, 'Bot with name: %s has been updated.' % self.object.name)
+        return reverse_lazy('bots:bot', kwargs={'id': self.object.pk})
 
 
 class DeleteBotView(LoginRequiredMixin, DeleteView):
@@ -57,7 +54,5 @@ class DeleteBotView(LoginRequiredMixin, DeleteView):
     template_name = 'bots/delete.html'
     pk_url_kwarg = 'id'
     context_object_name = 'bot'
-    login_url = '/admin/login/'
-    redirect_field_name = 'redirect_to'
-
+    login_url = reverse_lazy('pages:login')
     success_url = reverse_lazy('bots:index')

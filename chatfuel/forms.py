@@ -1,7 +1,7 @@
-from django import forms
-from instances.models import Instance
+from instances.models import Instance, AttributeValue
 from messenger_users.models import User
 from groups.models import Code
+from django import forms
 
 
 class SetSectionToInstance(forms.Form):
@@ -16,3 +16,19 @@ class GetInstancesForm(forms.Form):
 
 class VerifyCodeForm(forms.Form):
     code = forms.ModelChoiceField(Code.objects.all(), to_field_name='code')
+
+
+class InstanceModelForm(forms.ModelForm):
+    user_id = forms.ModelChoiceField(queryset=User.objects.all())
+
+    class Meta:
+        model = Instance
+        fields = ('entity', 'name')
+
+
+class InstanceAttributeValue(forms.ModelForm):
+    instance = forms.ModelChoiceField(queryset=Instance.objects.all())
+
+    class Meta:
+        model = AttributeValue
+        fields = ('attribute', 'value')

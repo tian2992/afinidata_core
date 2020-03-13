@@ -17,7 +17,5 @@ urlpatterns = [
     path('data/', views.DataView.as_view(), name='data'),
     path('delete/', views.DeleteByUsernameView.as_view(), name="delete"),
     path('<int:id>/set_attributes/', views.set_attributes_for_user, name='set_attributes'),
-    path('<int:id>/assign_months_group/', views.AssignMonthsGroupView.as_view(), name='assign_months_group'),
-    path('create/', views.CreateMessengerUser.as_view(), name='create'),
-    path('add_data/', views.CreateMessengerUserData.as_view(), name='add_data')
+    path('<int:id>/assign_months_group/', views.AssignMonthsGroupView.as_view(), name='assign_months_group')
 ]

@@ -29,29 +29,3 @@ class AddMessengerUserView(PermissionRequiredMixin, CreateView):
                          (self.object.get_messenger_user().get_first_name(),
                           self.object.get_messenger_user().get_last_name()))
         return reverse_lazy('groups:group', kwargs={'group_id': self.object.group.pk})
-
-
-@method_decorator(csrf_exempt, name='dispatch')
-class ExchangeCodeView(TemplateView):
-    template_name = 'groups/code_form.html'
-
-    def get(self, request, *args, **kwargs):
-        raise Http404
-
-    def post(self, request, *args, **kwargs):
-        form = forms.ExchangeCodeForm(request.POST)
-
-        if form.is_valid():
-            user = form.cleaned_data['messenger_user_id']
-            code = form.cleaned_data['code']
-            exchange = models.AssignationMessengerUser.objects.create(messenger_user_id=user.pk,
-                                                                      group=code.group,
-                                                                      code=code)
-            code.exchange()
-            return JsonResponse(dict(set_attributes=dict(group_code_error='false',
-                                                         group_code_error_message=''),
-                                     messages=[]))
-        else:
-            return JsonResponse(dict(set_attributes=dict(group_code_error='true',
-                                                         group_code_error_message='User ID or code wrong'),
-                                     messages=[]))
