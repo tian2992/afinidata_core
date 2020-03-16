@@ -38,3 +38,9 @@ class InstanceAttributeValue(forms.ModelForm):
 class GetInstanceAttributeValue(forms.Form):
     instance = forms.ModelChoiceField(queryset=Instance.objects.all())
     attribute = forms.ModelChoiceField(queryset=Attribute.objects.all(), to_field_name='name')
+
+
+class ChangeNameForm(forms.Form):
+    instance = forms.ModelChoiceField(queryset=Instance.objects.all())
+    name = forms.CharField(max_length=30)
+

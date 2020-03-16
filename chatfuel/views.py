@@ -1,5 +1,5 @@
 from instances.models import InstanceAssociationUser, Instance, AttributeValue
-from django.views.generic import View, CreateView, TemplateView
+from django.views.generic import View, CreateView, TemplateView, UpdateView
 from groups.models import Code, AssignationMessengerUser
 from messenger_users.models import User as MessengerUser
 from django.utils.decorators import method_decorator
@@ -161,6 +161,37 @@ class GetInstanceAttributeView(TemplateView):
             },
                  messages=[])
         )
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class ChangeInstanceNameView(TemplateView):
+    template_name = 'chatfuel/form.html'
+
+    def get_context_data(self, **kwargs):
+        c = super(ChangeInstanceNameView, self).get_context_data()
+        c['form'] = forms.ChangeNameForm(None)
+        print(c['form'])
+        return c
+
+    def post(self, request, *args, **kwargs):
+
+        form = forms.ChangeNameForm(self.request.POST)
+
+        if not form.is_valid():
+            return JsonResponse(dict(set_attributes=dict(
+                request_status='error',
+                request_error='Invalid Params.'
+            ), messages=[]))
+
+        instance = Instance.objects.get(id=form.data['instance'])
+        instance.name = form.data['name']
+        response = instance.save()
+
+        return JsonResponse(dict(set_attributes=dict(
+            request_status='done',
+            request_message="name for instance has been changed.",
+            instance_name=instance.name
+        ), messages=[]))
 
 
 ''' CODE VIEWS '''
