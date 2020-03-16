@@ -1,7 +1,8 @@
-from instances.models import Instance, AttributeValue
+from instances.models import Instance, AttributeValue, PostInteraction
 from attributes.models import Attribute
 from messenger_users.models import User
 from groups.models import Code
+from posts.models import Post
 from django import forms
 
 
@@ -38,3 +39,16 @@ class InstanceAttributeValue(forms.ModelForm):
 class GetInstanceAttributeValue(forms.Form):
     instance = forms.ModelChoiceField(queryset=Instance.objects.all())
     attribute = forms.ModelChoiceField(queryset=Attribute.objects.all(), to_field_name='name')
+
+
+class ChangeNameForm(forms.Form):
+    instance = forms.ModelChoiceField(queryset=Instance.objects.all())
+    name = forms.CharField(max_length=30)
+
+
+class InstanceInteractionForm(forms.ModelForm):
+    post_id = forms.ModelChoiceField(queryset=Post.objects.all().only('id', 'name'))
+
+    class Meta:
+        model = PostInteraction
+        fields = ('instance', 'type', 'value')
