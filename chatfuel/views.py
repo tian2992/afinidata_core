@@ -1,4 +1,4 @@
-from instances.models import InstanceAssociationUser, Instance, AttributeValue
+from instances.models import InstanceAssociationUser, Instance, AttributeValue, PostInteraction
 from django.views.generic import View, CreateView, TemplateView, UpdateView
 from groups.models import Code, AssignationMessengerUser
 from messenger_users.models import User as MessengerUser
@@ -9,6 +9,7 @@ from django.http import JsonResponse, Http404
 from attributes.models import Attribute
 from groups import forms as group_forms
 from chatfuel import forms
+from django.utils import timezone
 
 
 ''' MESSENGER USERS VIEWS '''
@@ -250,6 +251,9 @@ class CreateInstanceAttributeView(CreateView):
     template_name = 'chatfuel/form.html'
     fields = ('instance', 'value', 'attribute')
 
+    def get(self, request, *args, **kwargs):
+        raise Http404
+
     def get_form(self, form_class=None):
         form = super(CreateInstanceAttributeView, self).get_form(form_class=None)
         form.fields['attribute'].to_field_name = 'name'
@@ -274,4 +278,30 @@ class CreateInstanceAttributeView(CreateView):
 
     def get(self, request, *args):
         raise Http404
+
+
+''' INTERACTION VIEWS '''
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class CreateInstanceInteractionView(CreateView):
+    template_name = 'chatfuel/form.html'
+    form_class = forms.InstanceInteractionForm
+
+    def form_valid(self, form):
+        form.instance.post_id = form.data['post_id']
+        form.instance.created_at = timezone.now()
+        interaction = form.save()
+
+        if not interaction:
+            return JsonResponse(dict(set_attributes=dict(request_status='error',
+                                                         status_error='Invalid params'), messages=[]))
+
+        return JsonResponse(dict(set_attributes=dict(request_status='done',
+                                                     request_interaction_id=interaction.pk),
+                                 messages=[]))
+
+    def form_invalid(self, form):
+        return JsonResponse(dict(set_attributes=dict(request_status='error',
+                                                     status_error='Invalid params'), messages=[]))
 
