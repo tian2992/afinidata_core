@@ -1,14 +1,7 @@
-from django import forms
 from instances.models import Score, ScoreTracking, Instance
 from attributes.models import Attribute
 from areas.models import Area
-
-
-class ScoreModelForm(forms.ModelForm):
-
-    class Meta:
-        model = Score
-        fields = ('value', 'area', 'instance')
+from django import forms
 
 
 class ScoreTrackingModelForm(forms.ModelForm):
@@ -22,7 +15,7 @@ class InstanceModelForm(forms.ModelForm):
 
     class Meta:
         model = Instance
-        fields = ('entity', 'bot', 'name', 'user_id')
+        fields = ('entity', 'name')
 
 
 class InstanceAttributeValueForm(forms.Form):

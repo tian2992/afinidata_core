@@ -9,13 +9,14 @@ https://docs.djangoproject.com/en/2.1/howto/deployment/wsgi/
 
 import os
 from dotenv import load_dotenv
+from core.settings import BASE_DIR
+
+env_path = os.path.join(BASE_DIR, '.env')
+load_dotenv(dotenv_path=env_path)
+
 
 from django.core.wsgi import get_wsgi_application
 
-project_folder = os.path.expanduser('~/core')
-print(project_folder)
-load_dotenv(os.path.join(project_folder, '.env'))
-
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.settings.production')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'core.production')
 
 application = get_wsgi_application()

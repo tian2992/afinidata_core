@@ -1,0 +1,109 @@
+{% extends 'base/private.html' %}
+{% block title %}Afinidata | Instances{% endblock %}
+
+{% block content %}
+
+    <div class="container-fluid">
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Instances</h1>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary">Instances List</h6>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>Name</th>
+                          <th>Entity</th>
+                          <th>Users</th>
+                          <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                          <th>ID</th>
+                          <th>Name</th>
+                          <th>Entity</th>
+                          <th>Users</th>
+                          <th>Actions</th>
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        {% for instance in object_list %}
+                            <tr>
+                              <td>{{ instance.pk }}</td>
+                              <td>{{ instance.name.capitalize }}</td>
+                              <td><a href="{% url 'entities:entity' id=instance.entity.pk %}">{{ instance.entity.name.title }}</a></td>
+                              <td>
+                                  {% for user in instance.get_users %}
+                                      (<a href="{% url 'messenger_users:user' id=user.pk %}">{{ user.pk }}</a>) <span>{{ user.get_first_name }} {{ user.get_last_name }}</span>
+                                      <br>
+                                  {% endfor %}
+                              </td>
+                              <td>
+                                  <div class="btn-group">
+                                      <a href="{% url 'instances:instance' id=instance.pk %}" class="btn btn-primary"><i class="fa fa-eye"></i></a>
+                                      <a href="{% url 'instances:edit' id=instance.pk %}" class="btn btn-success"><i class="fa fa-pen"></i></a>
+                                      <a href="{% url 'instances:delete' id=instance.pk %}" class="btn btn-danger"><i class="fa fa-times"></i></a>
+                                  </div>
+                              </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+              </div>
+                {% if is_paginated %}
+                  <div class="row">
+                      <div class="col-8">
+                        <h6>Page {{ page_obj.number }} of {{ paginator.num_pages }}</h6>
+                      </div>
+                      <div class="col-4">
+                        <div>
+                          <div class="btn-group">
+                            {% if page_obj.has_previous %}
+                              <a class="btn btn-light" href="?page={{ page_obj.previous_page_number }}">&laquo;</a>
+                            {% else %}
+                              <button class="btn btn-light" disabled>&laquo;</button>
+                            {% endif %}
+                            {% for i in paginator.page_range %}
+                              {% if page_obj.previous_page_number == i and page_obj.previous_page_number != 1 %}
+                                <a class="btn btn-light" href="?page={{ 1 }}">{{ 1 }}</a>
+                              {% endif %}
+                              {% if page_obj.previous_page_number == i %}
+                                <a class="btn btn-light" href="?page={{ i }}">{{ i }}</a>
+                              {% endif %}
+                              {% if page_obj.number == i %}
+                                  <button class="btn btn-primary" disabled>
+                                      <span>{{ i }} <span class="sr-only">(current)</span></span>
+                                  </button>
+                              {% endif %}
+                              {% if page_obj.next_page_number == i %}
+                                <a class="btn btn-light" href="?page={{ i }}">{{ i }}</a>
+                              {% endif %}
+                              {% if page_obj.next_page_number == i and page_obj.next_page_number != paginator.num_pages %}
+                                <a class="btn btn-light" href="?page={{ paginator.num_pages }}">{{ paginator.num_pages }}</a>
+                              {% endif %}
+                            {% endfor %}
+                            {% if page_obj.has_next %}
+                              <a class="btn btn-light" href="?page={{ page_obj.next_page_number }}">&raquo;</a>
+                            {% else %}
+                              <button class="btn btn-light" disabled><span>&raquo;</span></button>
+                            {% endif %}
+                          </div>
+                        </div>
+                      </div>
+                  </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <a href="{% url 'instances:new' %}">Create Instance</a>
+{% endblock %}

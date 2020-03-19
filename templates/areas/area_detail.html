@@ -1,0 +1,32 @@
+{% extends 'base/private.html' %}
+
+{% block title %}
+    Area: {{ area.name }}
+{% endblock %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Area: {{ object.name }}</h1>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-primary">Info</h6>
+            </div>
+            <div class="card-body">
+                <strong class="text-gray-800">Description: </strong><span>{{ object.description }}</span><br>
+                <strong class="text-gray-800">Milestones count: </strong><span>{{ object.milestone_set.all.count }}</span><br>
+                <strong class="text-gray-800">Created At: </strong><span>{{ object.created_at }}</span><br>
+                <strong class="text-gray-800">Updated At: </strong><span>{{ object.updated_at }}</span><br>
+                <strong class="text-gray-800">Actions :</strong>
+                <div class="btn-group">
+                    <a class="btn btn-success" href="{% url 'areas:edit' id=area.pk %}"><i class="fas fa-pen"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

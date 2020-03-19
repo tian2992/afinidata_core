@@ -1,0 +1,20 @@
+<hr class="sidebar-divider">
+
+  <div class="sidebar-heading">Utilities</div>
+
+  <!-- Nav Item - Pages Collapse Menu -->
+  <li class="nav-item">
+    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true" aria-controls="collapsePages">
+      <i class="fas fa-fw fa-wrench"></i>
+      <span>Utilities</span>
+    </a>
+    <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+      <div class="bg-white py-2 collapse-inner rounded">
+        <h6 class="collapse-header">Utilities:</h6>
+        <a class="collapse-item" href="{% url 'utilities:get_children' %}">Get Children</a>
+        <a class="collapse-item" href="{% url 'utilities:get_children_interactions' %}">Get Children Interactions</a>
+        <a class="collapse-item" href="{% url 'utilities:get_children_milestones' %}">Get Children Milestones</a>
+        <div class="collapse-divider"></div>
+      </div>
+    </div>
+  </li>

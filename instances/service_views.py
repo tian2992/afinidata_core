@@ -1,32 +1,13 @@
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-from instances.forms import InstanceModelForm
 from instances.models import Instance, InstanceSection, Response
-from milestones.models import Milestone
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse, Http404
+from instances.forms import InstanceModelForm
+from django.views.generic import CreateView
 from datetime import datetime, timedelta
-
-
-@csrf_exempt
-def create_user(request):
-
-    if request.method == 'GET':
-        return JsonResponse(dict(status='error', error='Invalid method.'))
-
-    form = InstanceModelForm(request.POST)
-
-    if not form.is_valid():
-        return JsonResponse(dict(status='error', error='Invalid params.'))
-
-    instance = form.save()
-    return JsonResponse(dict(
-        status='done',
-        data=dict(
-            instance=dict(
-                id=instance.pk,
-                name=instance.name
-            )
-        )
-    ))
+from milestones.models import Milestone
+from instances import models
 
 
 @csrf_exempt

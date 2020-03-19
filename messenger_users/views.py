@@ -1,5 +1,7 @@
+from django.views.generic import ListView, View, DetailView, UpdateView, DeleteView, CreateView
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import ListView, View, DetailView, UpdateView, DeleteView
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 from messenger_users.models import User, UserData
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -17,7 +19,7 @@ class HomeView(LoginRequiredMixin, ListView):
     login_url = '/admin/login/'
     redirect_field_name = 'redirect_to'
     context_object_name = 'users'
-    paginate_by = 100
+    paginate_by = 30
     model = User
 
 
@@ -46,15 +48,7 @@ class ByGroupView(LoginRequiredMixin, ListView):
 class UserView(LoginRequiredMixin, DetailView):
     model = User
     pk_url_kwarg = 'id'
-    context_object_name = 'user'
-    template_name = 'messenger_users/user.html'
-    login_url = '/admin/login/'
-    redirect_field_name = 'redirect_to'
-
-    def get_context_data(self, **kwargs):
-        user_id = kwargs['object'].pk
-        instances = Instance.objects.filter(user_id=user_id)
-        return dict(user=kwargs['object'], instances=instances)
+    login_url = reverse_lazy('pages:login')
 
 
 class UserCaptchaView(View):
